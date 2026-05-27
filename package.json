@@ -1,0 +1,30 @@
+{
+  "name": "royale-wallet-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Royale Wallet Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "keywords": [
+    "wallet",
+    "royale-wallet",
+    "express",
+    "mongoose",
+    "vercel"
+  ],
+  "author": "",
+  "license": "ISC"
+}
