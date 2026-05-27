@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Withdraw | Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444;--orange:#f97316}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;padding-bottom:80px}
+.header{background:rgba(8,8,8,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 1.1rem;display:flex;align-items:center;gap:0.8rem;position:sticky;top:0;z-index:100}
+.back-btn{width:36px;height:36px;background:var(--black3);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;font-size:0.85rem;flex-shrink:0}
+.h-title{font-size:1rem;font-weight:800}.h-title span{color:var(--gold)}
+.wrap{max-width:480px;margin:0 auto;padding:1rem}
+.bal-box{background:linear-gradient(145deg,#1a1500,#0d0d00);border:1px solid var(--border);border-radius:16px;padding:1rem 1.2rem;margin-bottom:0.9rem;display:flex;justify-content:space-between;align-items:center}
+.bal-lbl{font-size:0.52rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.2rem}
+.bal-val{font-size:1.4rem;font-weight:800;color:var(--gold)}
+.card{background:var(--black2);border:1px solid var(--border);border-radius:20px;padding:1.3rem;margin-bottom:0.9rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.c-title{font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:1rem}
+.inp-grp{margin-bottom:0.85rem}
+.inp-grp label{display:block;font-size:0.52rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.16em;margin-bottom:0.4rem}
+.inp{width:100%;padding:0.85rem 1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;font-size:0.88rem;font-weight:500;outline:none;transition:all 0.2s;font-family:'DM Sans',sans-serif;color:var(--text)}
+.inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.08)}
+.inp::placeholder{color:var(--muted);font-weight:400}
+.quick-amts{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.85rem}
+.qa{padding:0.4rem 0.9rem;background:var(--black3);border:1px solid var(--border);border-radius:100px;font-size:0.68rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all 0.15s}
+.qa.sel,.qa:active{background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.3);color:var(--gold)}
+.notice{background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.15);border-radius:13px;padding:0.85rem 1rem;margin-bottom:0.85rem;font-size:0.72rem;color:var(--orange);line-height:1.6}
+.btn{width:100%;padding:0.92rem;background:linear-gradient(135deg,var(--gold),#a07830,var(--gold));color:#000;border:none;border-radius:13px;font-size:0.82rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;font-family:'DM Sans',sans-serif;transition:all 0.2s;box-shadow:0 6px 20px rgba(201,168,76,0.2)}
+.btn:active{transform:scale(0.97)}
+.btn:disabled{opacity:0.5}
+.btn.loading .btn-text{display:none}
+.btn.loading .spinner{display:inline-block}
+.spinner{display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.msg{padding:0.7rem 1rem;border-radius:12px;font-size:0.78rem;font-weight:600;margin-bottom:0.85rem;display:none;text-align:center}
+.msg.error{display:block;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
+.msg.success{display:block;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--green)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:0.48rem;font-weight:800;text-transform:uppercase;cursor:pointer;text-decoration:none;flex:1;transition:color 0.18s;padding-top:4px;position:relative}
+.nav-item.active{color:var(--gold)}
+.nav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--gold);border-radius:0 0 4px 4px;display:none}
+.nav-item.active .nav-pip{display:block}
+.nav-item i{font-size:1.05rem}
+</style>
+</head>
+<body>
+<div class="header">
+  <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+  <div class="h-title">With<span>draw</span></div>
+</div>
+<div class="wrap">
+  <div class="bal-box">
+    <div><div class="bal-lbl">Available Balance</div><div class="bal-val">₹<span id="bal">0.00</span></div></div>
+    <i class="fa-solid fa-crown" style="font-size:1.5rem;color:rgba(201,168,76,0.3)"></i>
+  </div>
+  <div id="msg" class="msg"></div>
+  <div class="card">
+    <div class="c-title">Withdrawal Details</div>
+    <div class="inp-grp">
+      <label>Your UPI ID</label>
+      <input class="inp" type="text" id="upi" placeholder="yourname@upi">
+    </div>
+    <div class="inp-grp">
+      <label>Amount (Minimum ₹10)</label>
+      <input class="inp" type="number" id="amount" placeholder="Enter amount">
+    </div>
+    <div class="quick-amts">
+      <div class="qa" onclick="setAmt(10,this)">₹10</div>
+      <div class="qa" onclick="setAmt(50,this)">₹50</div>
+      <div class="qa" onclick="setAmt(100,this)">₹100</div>
+      <div class="qa" onclick="setAmt(500,this)">₹500</div>
+    </div>
+    <div class="notice"><i class="fa-solid fa-clock"></i> Withdrawal <b>48 ghante</b> mein process hogi. Amount aapke UPI ID pe bheja jaega.</div>
+    <button class="btn" id="w-btn" onclick="withdraw()">
+      <span class="spinner"></span>
+      <span class="btn-text"><i class="fa-solid fa-arrow-up"></i> Request Withdrawal</span>
+    </button>
+  </div>
+</div>
+<div class="bottom-nav">
+  <a href="dashboard.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-house"></i>Home</a>
+  <a href="transfer.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-paper-plane"></i>Send</a>
+  <a href="deposit.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-plus"></i>Add</a>
+  <a href="transactions.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-receipt"></i>History</a>
+  <a href="settings.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-key"></i>API</a>
+</div>
+<script>
+const API='';
+const token=localStorage.getItem('rw_token');
+if(!token)window.location.href='index.html';
+function setAmt(v,el){document.getElementById('amount').value=v;document.querySelectorAll('.qa').forEach(q=>q.classList.remove('sel'));el.classList.add('sel');}
+function showMsg(t,type){const m=document.getElementById('msg');m.textContent=t;m.className='msg '+type;}
+async function loadBal(){try{const r=await fetch(API+'/wallet/balance',{headers:{'Authorization':'Bearer '+token}});const d=await r.json();if(d.status==='success')document.getElementById('bal').textContent=parseFloat(d.balance).toFixed(2);}catch(e){}}
+loadBal();
+async function withdraw(){
+  const upi=document.getElementById('upi').value.trim();
+  const amount=document.getElementById('amount').value.trim();
+  if(!upi)return showMsg('UPI ID enter karo!','error');
+  if(!amount||parseFloat(amount)<10)return showMsg('Minimum ₹10 withdraw karo!','error');
+  if(!confirm(`₹${amount} withdraw karna chahte ho to ${upi}?`))return;
+  const btn=document.getElementById('w-btn');
+  btn.classList.add('loading');btn.disabled=true;
+  try{
+    const r=await fetch(API+'/wallet/withdraw',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({upi,amount})});
+    const d=await r.json();
+    if(d.status==='success'){showMsg(`✅ Withdrawal request submitted! Txn: ${d.tx_id}`,'success');document.getElementById('upi').value='';document.getElementById('amount').value='';loadBal();}
+    else showMsg(d.message||'Error','error');
+  }catch(e){showMsg('Network error','error');}
+  btn.classList.remove('loading');btn.disabled=false;
+}
+</script>
+</body>
+</html>
