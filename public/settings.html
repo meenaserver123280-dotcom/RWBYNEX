@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings | Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;padding-bottom:80px}
+.header{background:rgba(8,8,8,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 1.1rem;display:flex;align-items:center;gap:0.8rem;position:sticky;top:0;z-index:100}
+.back-btn{width:36px;height:36px;background:var(--black3);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;font-size:0.85rem;flex-shrink:0}
+.h-title{font-size:1rem;font-weight:800}.h-title span{color:var(--gold)}
+.wrap{max-width:480px;margin:0 auto;padding:1rem}
+.profile-card{background:linear-gradient(145deg,#1a1500,#0d0d00);border:1px solid var(--border);border-radius:20px;padding:1.4rem;margin-bottom:0.9rem;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden}
+.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.p-av{width:56px;height:56px;background:linear-gradient(135deg,var(--gold),#7a5c20);border-radius:17px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;font-size:1.4rem;flex-shrink:0}
+.p-name{font-size:1rem;font-weight:800;margin-bottom:2px}
+.p-mobile{font-size:0.65rem;color:var(--muted);font-family:monospace}
+.p-wid{font-size:0.62rem;color:var(--gold);font-family:monospace;margin-top:2px}
+.card{background:var(--black2);border:1px solid var(--border);border-radius:20px;padding:1.3rem;margin-bottom:0.9rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.c-title{font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:1rem}
+.api-box{background:var(--black3);border:1px solid var(--border);border-radius:13px;padding:0.9rem 1rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.75rem}
+.api-key-text{flex:1;font-family:monospace;font-size:0.72rem;color:var(--gold);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.api-copy{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.35rem 0.75rem;color:var(--gold);font-size:0.62rem;font-weight:700;cursor:pointer}
+.btn-sm{padding:0.7rem 1rem;background:rgba(201,168,76,0.1);border:1.5px solid rgba(201,168,76,0.25);border-radius:13px;color:var(--gold);font-size:0.72rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;width:100%;display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:0.6rem}
+.btn-sm:active{background:rgba(201,168,76,0.2)}
+.btn-red{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red)}
+.btn-red:active{background:rgba(239,68,68,0.15)}
+.msg{padding:0.7rem 1rem;border-radius:12px;font-size:0.78rem;font-weight:600;margin-bottom:0.75rem;display:none;text-align:center}
+.msg.error{display:block;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
+.msg.success{display:block;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--green)}
+.api-endpoint{background:var(--black3);border:1px solid var(--border);border-radius:13px;padding:0.85rem 1rem;margin-bottom:0.6rem}
+.ep-method{display:inline-block;font-size:0.5rem;font-weight:800;padding:2px 7px;border-radius:4px;margin-bottom:0.35rem}
+.ep-method.get{background:rgba(16,185,129,0.15);color:var(--green)}
+.ep-url{font-family:monospace;font-size:0.68rem;color:var(--gold);word-break:break-all}
+.ep-desc{font-size:0.62rem;color:var(--muted);margin-top:0.3rem}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:0.48rem;font-weight:800;text-transform:uppercase;cursor:pointer;text-decoration:none;flex:1;transition:color 0.18s;padding-top:4px;position:relative}
+.nav-item.active{color:var(--gold)}
+.nav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--gold);border-radius:0 0 4px 4px;display:none}
+.nav-item.active .nav-pip{display:block}
+.nav-item i{font-size:1.05rem}
+</style>
+</head>
+<body>
+<div class="header">
+  <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+  <div class="h-title">Set<span>tings</span></div>
+</div>
+<div class="wrap">
+  <div class="profile-card">
+    <div class="p-av" id="p-av">R</div>
+    <div>
+      <div class="p-name" id="p-name">—</div>
+      <div class="p-mobile" id="p-mobile">—</div>
+      <div class="p-wid" id="p-wid">—</div>
+    </div>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <div class="card">
+    <div class="c-title">API Key</div>
+    <div class="api-box">
+      <div class="api-key-text" id="api-key">—</div>
+      <div class="api-copy" onclick="copyKey()"><i class="fa-regular fa-copy"></i> Copy</div>
+    </div>
+    <button class="btn-sm" onclick="regenKey()"><i class="fa-solid fa-rotate"></i> Regenerate API Key</button>
+  </div>
+
+  <div class="card">
+    <div class="c-title">API Endpoints</div>
+    <div class="api-endpoint">
+      <div class="ep-method get">GET</div>
+      <div class="ep-url">/payment?key={api_key}&to={mobile}&amt={amount}</div>
+      <div class="ep-desc">Send payment to any user</div>
+    </div>
+    <div class="api-endpoint">
+      <div class="ep-method get">GET</div>
+      <div class="ep-url">/payment/balance?key={api_key}</div>
+      <div class="ep-desc">Check your balance</div>
+    </div>
+    <div class="api-endpoint">
+      <div class="ep-method get">GET</div>
+      <div class="ep-url">/payment/verify?key={api_key}&mobile={mobile}</div>
+      <div class="ep-desc">Verify if user exists</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="c-title">Security</div>
+    <button class="btn-sm" onclick="window.location.href='changepin.html'"><i class="fa-solid fa-shield"></i> Change Security PIN</button>
+    <button class="btn-sm btn-red" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout Account</button>
+  </div>
+</div>
+<div class="bottom-nav">
+  <a href="dashboard.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-house"></i>Home</a>
+  <a href="transfer.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-paper-plane"></i>Send</a>
+  <a href="deposit.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-plus"></i>Add</a>
+  <a href="transactions.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-receipt"></i>History</a>
+  <a href="settings.html" class="nav-item active"><div class="nav-pip"></div><i class="fa-solid fa-key"></i>API</a>
+</div>
+<script>
+const API='';
+const token=localStorage.getItem('rw_token');
+const user=JSON.parse(localStorage.getItem('rw_user')||'{}');
+if(!token)window.location.href='index.html';
+document.getElementById('p-av').textContent=(user.name||'R')[0].toUpperCase();
+document.getElementById('p-name').textContent=user.name||'—';
+document.getElementById('p-mobile').textContent=user.mobile||'—';
+document.getElementById('p-wid').textContent=user.wallet_id||'—';
+document.getElementById('api-key').textContent=user.api_key||'—';
+function showMsg(t,type){const m=document.getElementById('msg');m.textContent=t;m.className='msg '+type;}
+function copyKey(){navigator.clipboard.writeText(user.api_key||'').then(()=>showMsg('API Key copied!','success'));}
+async function regenKey(){
+  if(!confirm('API key regenerate karna chahte ho? Old key kaam nahi karega.'))return;
+  try{
+    const r=await fetch(API+'/auth/regen-key',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}});
+    const d=await r.json();
+    if(d.status==='success'){
+      user.api_key=d.api_key;
+      localStorage.setItem('rw_user',JSON.stringify(user));
+      document.getElementById('api-key').textContent=d.api_key;
+      showMsg('✅ New API key generated!','success');
+    }else showMsg(d.message||'Error','error');
+  }catch(e){showMsg('Network error','error');}
+}
+function logout(){if(!confirm('Logout karna chahte ho?'))return;localStorage.clear();window.location.href='index.html';}
+</script>
+</body>
+</html>
