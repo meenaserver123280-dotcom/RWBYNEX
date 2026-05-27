@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History | Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444;--orange:#f97316}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;padding-bottom:80px}
+.header{background:rgba(8,8,8,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 1.1rem;display:flex;align-items:center;gap:0.8rem;position:sticky;top:0;z-index:100}
+.back-btn{width:36px;height:36px;background:var(--black3);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;font-size:0.85rem;flex-shrink:0}
+.h-title{font-size:1rem;font-weight:800;flex:1}.h-title span{color:var(--gold)}
+.wrap{max-width:480px;margin:0 auto;padding:1rem}
+.search-box{background:var(--black2);border:1px solid var(--border);border-radius:14px;padding:0.7rem 1rem;display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem}
+.search-box i{color:var(--muted);font-size:0.85rem}
+.search-box input{flex:1;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--text)}
+.search-box input::placeholder{color:var(--muted)}
+.filter-row{display:flex;gap:0.5rem;margin-bottom:0.75rem;overflow-x:auto;padding-bottom:2px}
+.filter-btn{padding:0.35rem 0.85rem;background:var(--black3);border:1px solid var(--border);border-radius:100px;font-size:0.62rem;font-weight:700;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
+.filter-btn.active{background:rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.3);color:var(--gold)}
+.txn-list{background:var(--black2);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.txn-item{padding:0.9rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(42,34,0,0.5);cursor:pointer;transition:background 0.15s}
+.txn-item:last-child{border-bottom:none}
+.txn-item:active{background:rgba(201,168,76,0.04)}
+.ti-left{display:flex;align-items:center;gap:0.75rem}
+.ti-ico{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+.ti-name{font-size:0.78rem;font-weight:700;margin-bottom:2px}
+.ti-time{font-size:0.58rem;color:var(--muted)}
+.ti-remark{font-size:0.58rem;color:var(--text2);margin-top:1px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ti-right{text-align:right}
+.ti-amt{font-size:0.88rem;font-weight:800}
+.ti-amt.cr{color:var(--green)}
+.ti-amt.dr{color:var(--red)}
+.ti-status{font-size:0.5rem;font-weight:800;margin-top:3px;padding:2px 7px;border-radius:100px;display:inline-block}
+.ti-status.success{background:rgba(16,185,129,0.12);color:var(--green)}
+.ti-status.pending{background:rgba(249,115,22,0.12);color:var(--orange)}
+.ti-status.failed,.ti-status.rejected{background:rgba(239,68,68,0.12);color:var(--red)}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-state i{font-size:2.5rem;display:block;margin-bottom:0.6rem;opacity:0.15}
+.empty-state p{font-size:0.72rem;font-weight:600}
+.loading-state{text-align:center;padding:2rem;color:var(--muted);font-size:0.75rem}
+
+/* DETAIL MODAL */
+#detail-modal{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+#detail-modal.open{display:flex}
+.detail-box{background:var(--black2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:1.5rem 1.4rem 2rem;width:100%;max-width:480px;animation:slideUp 0.3s cubic-bezier(.34,1.2,.64,1);position:relative;overflow:hidden}
+.detail-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.handle{width:40px;height:4px;border-radius:10px;background:var(--border);margin:0 auto 1.2rem}
+.d-ico{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin:0 auto 0.8rem}
+.d-amt{font-size:1.8rem;font-weight:800;text-align:center;margin-bottom:0.3rem}
+.d-amt.cr{color:var(--green)}
+.d-amt.dr{color:var(--red)}
+.d-status{text-align:center;margin-bottom:1.2rem}
+.d-rows{margin-bottom:1rem}
+.d-row{display:flex;justify-content:space-between;font-size:0.75rem;padding:0.6rem 0;border-bottom:1px solid var(--border);color:var(--text2)}
+.d-row:last-child{border-bottom:none}
+.d-row span:last-child{font-weight:700;color:var(--text);text-align:right;max-width:200px;word-break:break-all}
+.d-txn{font-family:monospace;font-size:0.68rem}
+.copy-txn{background:rgba(201,168,76,0.1);border:none;border-radius:6px;color:var(--gold);padding:2px 6px;cursor:pointer;font-size:0.6rem;margin-left:4px}
+.btn-close{width:100%;padding:0.9rem;border-radius:13px;background:var(--black3);border:1px solid var(--border);color:var(--text2);font-weight:700;font-size:0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:0.48rem;font-weight:800;text-transform:uppercase;cursor:pointer;text-decoration:none;flex:1;transition:color 0.18s;padding-top:4px;position:relative}
+.nav-item.active{color:var(--gold)}
+.nav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--gold);border-radius:0 0 4px 4px;display:none}
+.nav-item.active .nav-pip{display:block}
+.nav-item i{font-size:1.05rem}
+</style>
+</head>
+<body>
+
+<div id="detail-modal">
+  <div class="detail-box">
+    <div class="handle"></div>
+    <div class="d-ico" id="d-ico"></div>
+    <div class="d-amt" id="d-amt">₹0</div>
+    <div class="d-status"><span class="ti-status" id="d-status">—</span></div>
+    <div class="d-rows">
+      <div class="d-row"><span>Type</span><span id="d-type">—</span></div>
+      <div class="d-row"><span>From</span><span id="d-from">—</span></div>
+      <div class="d-row"><span>To</span><span id="d-to">—</span></div>
+      <div class="d-row"><span>Remark</span><span id="d-remark">—</span></div>
+      <div class="d-row"><span>Txn ID</span><span><span class="d-txn" id="d-txid">—</span><button class="copy-txn" onclick="copyTxn()"><i class="fa-regular fa-copy"></i></button></span></div>
+      <div class="d-row"><span>Date & Time</span><span id="d-date">—</span></div>
+    </div>
+    <button class="btn-close" onclick="document.getElementById('detail-modal').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<div class="header">
+  <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+  <div class="h-title">Trans<span>actions</span></div>
+</div>
+
+<div class="wrap">
+  <div class="search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Search by name, amount, txn ID..." oninput="filterTxns(this.value)">
+  </div>
+  <div class="filter-row">
+    <div class="filter-btn active" onclick="setFilter('all',this)">All</div>
+    <div class="filter-btn" onclick="setFilter('credit',this)">Credit</div>
+    <div class="filter-btn" onclick="setFilter('debit',this)">Debit</div>
+    <div class="filter-btn" onclick="setFilter('withdraw',this)">Withdraw</div>
+    <div class="filter-btn" onclick="setFilter('deposit',this)">Deposit</div>
+  </div>
+  <div class="txn-list" id="txn-list">
+    <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="dashboard.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-house"></i>Home</a>
+  <a href="transfer.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-paper-plane"></i>Send</a>
+  <a href="deposit.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-plus"></i>Add</a>
+  <a href="transactions.html" class="nav-item active"><div class="nav-pip"></div><i class="fa-solid fa-receipt"></i>History</a>
+  <a href="settings.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-key"></i>API</a>
+</div>
+
+<script>
+const API='';
+const token=localStorage.getItem('rw_token');
+const user=JSON.parse(localStorage.getItem('rw_user')||'{}');
+if(!token)window.location.href='index.html';
+
+let allTxns=[];let currentFilter='all';let currentSearch='';
+
+function fmt(d){if(!d)return'—';return new Date(d).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true});}
+
+async function loadTxns(){
+  try{
+    const r=await fetch(API+'/wallet/transactions',{headers:{'Authorization':'Bearer '+token}});
+    const d=await r.json();
+    if(d.status==='success'){allTxns=d.transactions||[];renderTxns();}
+    else document.getElementById('txn-list').innerHTML='<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>Error loading</p></div>';
+  }catch(e){document.getElementById('txn-list').innerHTML='<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>Network error</p></div>';}
+}
+
+function setFilter(f,el){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderTxns();}
+function filterTxns(q){currentSearch=q.toLowerCase();renderTxns();}
+
+function renderTxns(){
+  let txns=allTxns;
+  if(currentFilter==='credit') txns=txns.filter(t=>t.receiver_id&&(t.receiver_id._id===user.id||t.receiver_id===user.id));
+  else if(currentFilter==='debit') txns=txns.filter(t=>t.sender_id&&(t.sender_id._id===user.id||t.sender_id===user.id)&&t.type!=='withdraw');
+  else if(currentFilter==='withdraw') txns=txns.filter(t=>t.type==='withdraw');
+  else if(currentFilter==='deposit') txns=txns.filter(t=>t.type==='deposit');
+  if(currentSearch) txns=txns.filter(t=>{
+    const name=(t.sender_id?.name||'')+(t.receiver_id?.name||'');
+    return name.toLowerCase().includes(currentSearch)||t.tx_id?.toLowerCase().includes(currentSearch)||(t.amount+'').includes(currentSearch);
+  });
+  if(!txns.length){document.getElementById('txn-list').innerHTML='<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>No transactions found</p></div>';return;}
+  const html=txns.map(t=>{
+    const isCr=t.receiver_id&&(t.receiver_id._id===user.id||t.receiver_id===user.id);
+    const amt=parseFloat(t.amount).toFixed(2);
+    const name=t.type==='withdraw'?'Withdrawal':t.type==='deposit'?'Deposit':isCr?(t.sender_id?.name||t.sender_id?.mobile||'System'):(t.receiver_id?.name||t.receiver_id?.mobile||'System');
+    const time=fmt(t.tx_time);
+    const icoBg=t.type==='withdraw'?'rgba(249,115,22,0.12)':t.type==='deposit'?'rgba(56,189,248,0.12)':isCr?'rgba(16,185,129,0.12)':'rgba(239,68,68,0.12)';
+    const icoClr=t.type==='withdraw'?'#f97316':t.type==='deposit'?'#38bdf8':isCr?'#10b981':'#ef4444';
+    const icoNm=t.type==='withdraw'?'arrow-up':t.type==='deposit'?'arrow-down':isCr?'arrow-down':'arrow-up';
+    const statusCls=t.status||'success';
+    return `<div class="txn-item" onclick="showDetail(${JSON.stringify(t).replace(/"/g,'&quot;')})">
+      <div class="ti-left">
+        <div class="ti-ico" style="background:${icoBg}"><i class="fa-solid fa-${icoNm}" style="color:${icoClr}"></i></div>
+        <div>
+          <div class="ti-name">${name}</div>
+          <div class="ti-time">${time}</div>
+          ${t.remark?`<div class="ti-remark">${t.remark}</div>`:''}
+        </div>
+      </div>
+      <div class="ti-right">
+        <div class="ti-amt ${isCr&&t.type!=='withdraw'?'cr':'dr'}">${isCr&&t.type!=='withdraw'?'+':'-'}₹${amt}</div>
+        <div class="ti-status ${statusCls}">${statusCls.toUpperCase()}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('txn-list').innerHTML=html;
+}
+
+let currentTxn=null;
+function showDetail(t){
+  currentTxn=t;
+  const isCr=t.receiver_id&&(t.receiver_id._id===user.id||t.receiver_id===user.id);
+  const amt=parseFloat(t.amount).toFixed(2);
+  const icoBg=t.type==='withdraw'?'rgba(249,115,22,0.12)':t.type==='deposit'?'rgba(56,189,248,0.12)':isCr?'rgba(16,185,129,0.12)':'rgba(239,68,68,0.12)';
+  const icoClr=t.type==='withdraw'?'#f97316':t.type==='deposit'?'#38bdf8':isCr?'#10b981':'#ef4444';
+  const icoNm=t.type==='withdraw'?'arrow-up':t.type==='deposit'?'arrow-down':isCr?'arrow-down':'arrow-up';
+  document.getElementById('d-ico').style.background=icoBg;
+  document.getElementById('d-ico').innerHTML=`<i class="fa-solid fa-${icoNm}" style="color:${icoClr};font-size:1.3rem"></i>`;
+  document.getElementById('d-amt').textContent=(isCr&&t.type!=='withdraw'?'+':'-')+'₹'+amt;
+  document.getElementById('d-amt').className='d-amt '+(isCr&&t.type!=='withdraw'?'cr':'dr');
+  document.getElementById('d-status').textContent=(t.status||'success').toUpperCase();
+  document.getElementById('d-status').className='ti-status '+(t.status||'success');
+  document.getElementById('d-type').textContent=t.type?.replace('_',' ').toUpperCase()||'TRANSFER';
+  document.getElementById('d-from').textContent=t.sender_id?.name?`${t.sender_id.name} (${t.sender_id.mobile})`:'System';
+  document.getElementById('d-to').textContent=t.receiver_id?.name?`${t.receiver_id.name} (${t.receiver_id.mobile})`:'—';
+  document.getElementById('d-remark').textContent=t.remark||'—';
+  document.getElementById('d-txid').textContent=t.tx_id||'—';
+  document.getElementById('d-date').textContent=fmt(t.tx_time);
+  document.getElementById('detail-modal').classList.add('open');
+}
+function copyTxn(){
+  if(!currentTxn?.tx_id)return;
+  navigator.clipboard.writeText(currentTxn.tx_id);
+}
+loadTxns();
+</script>
+</body>
+</html>
