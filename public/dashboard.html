@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--gold2:#e8c97a;--gold3:#f5e6c0;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444;--orange:#f97316}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;padding-bottom:80px;overflow-x:hidden}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.5s}
+#splash.hide{opacity:0;pointer-events:none}
+.sp-crown{font-size:3rem;margin-bottom:0.8rem;filter:drop-shadow(0 0 20px rgba(201,168,76,0.6));animation:crownPulse 2s ease-in-out infinite alternate}
+@keyframes crownPulse{from{filter:drop-shadow(0 0 12px rgba(201,168,76,0.4))}to{filter:drop-shadow(0 0 28px rgba(201,168,76,0.8))}}
+.sp-name{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);letter-spacing:0.06em}
+.sp-bar{width:140px;height:2px;background:#1a1500;border-radius:10px;margin-top:1.8rem;overflow:hidden}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;animation:barFill 1.8s ease forwards 0.3s}
+@keyframes barFill{to{width:100%}}
+
+/* SIDEBAR */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:999;display:none;backdrop-filter:blur(4px)}
+.overlay.active{display:block}
+.sidebar{position:fixed;top:0;left:-280px;width:280px;height:100%;background:var(--black2);border-right:1px solid var(--border);z-index:1000;transition:left 0.3s;overflow-y:auto;display:flex;flex-direction:column}
+.sidebar.open{left:0}
+.sb-head{background:linear-gradient(145deg,#1a1500,#0d0d00);padding:2rem 1.2rem 1.2rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.sb-head::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.sb-crown{font-size:1.5rem;margin-bottom:0.4rem}
+.sb-av{width:48px;height:48px;background:linear-gradient(135deg,var(--gold),#7a5c20);border-radius:15px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;font-size:1.2rem;margin-bottom:0.6rem}
+.sb-name{font-size:0.9rem;font-weight:800;color:var(--text)}
+.sb-id{font-size:0.6rem;color:var(--muted);margin-top:2px;font-family:monospace}
+.sb-body{padding:0.75rem;flex:1}
+.sb-cat{font-size:0.48rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.18em;padding:0.6rem 0.5rem 0.3rem}
+.sb-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0.75rem;border-radius:10px;color:var(--text2);text-decoration:none;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.sb-item:hover,.sb-item:active{background:rgba(201,168,76,0.08);color:var(--gold)}
+.sb-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.78rem;flex-shrink:0}
+.sb-div{border:0;border-top:1px solid var(--border);margin:0.5rem 0}
+.sb-logout{color:var(--red)!important}
+
+/* HEADER */
+.header{background:rgba(8,8,8,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 1.1rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.h-left{display:flex;align-items:center;gap:0.8rem}
+.hbtn{width:36px;height:36px;background:var(--black3);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;font-size:0.85rem}
+.hbtn:active{border-color:var(--gold);color:var(--gold)}
+.h-logo{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--gold)}
+.h-av{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),#7a5c20);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;font-size:0.85rem;cursor:pointer}
+
+/* WRAP */
+.wrap{max-width:480px;margin:0 auto;padding:1rem}
+
+/* BAL CARD */
+.bal-card{background:linear-gradient(145deg,#1a1500,#0d0d00);border:1px solid var(--border);border-radius:24px;padding:1.4rem;margin-bottom:0.9rem;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(201,168,76,0.1)}
+.bal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent)}
+.bc-glow{position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:rgba(201,168,76,0.05);border-radius:50%;filter:blur(30px)}
+.bc-crown{font-size:1.4rem;position:absolute;top:1.2rem;right:1.2rem;opacity:0.3}
+.bc-label{font-size:0.52rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(201,168,76,0.5);margin-bottom:0.25rem;position:relative;z-index:1}
+.bc-amt{font-size:2.4rem;font-weight:800;color:var(--gold);letter-spacing:-2px;position:relative;z-index:1;display:flex;align-items:flex-start;gap:4px}
+.bc-amt sup{font-size:1rem;font-weight:700;margin-top:0.5rem;opacity:0.7}
+.bc-wid{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:100px;padding:0.25rem 0.75rem;font-size:0.56rem;font-weight:700;color:rgba(201,168,76,0.7);margin-top:0.5rem;position:relative;z-index:1;font-family:monospace}
+.bc-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-top:1.1rem;position:relative;z-index:1}
+.bc-btn{display:flex;flex-direction:column;align-items:center;gap:0.3rem;padding:0.7rem 0.2rem;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.15);border-radius:13px;color:var(--gold);text-decoration:none;cursor:pointer;transition:all 0.15s}
+.bc-btn:active{background:rgba(201,168,76,0.14);transform:scale(0.93)}
+.bc-btn i{font-size:1rem}
+.bc-btn span{font-size:0.46rem;font-weight:800;text-transform:uppercase;opacity:0.8}
+.bc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:0.85rem;border-top:1px solid rgba(201,168,76,0.1);position:relative;z-index:1}
+.bc-uname{font-size:0.82rem;font-weight:800}
+.bc-mob{font-size:0.6rem;color:var(--muted);margin-top:2px}
+.bc-verified{display:inline-flex;align-items:center;gap:4px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7;font-size:0.48rem;font-weight:800;padding:3px 8px;border-radius:100px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.9rem}
+.stat-card{background:var(--black2);border:1px solid var(--border);border-radius:16px;padding:0.9rem 1rem;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 2px 2px 0}
+.stat-card.s-in::after{background:var(--green)}
+.stat-card.s-out::after{background:var(--red)}
+.s-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.68rem;margin-bottom:0.45rem}
+.stat-card.s-in .s-ico{background:rgba(16,185,129,0.12);color:var(--green)}
+.stat-card.s-out .s-ico{background:rgba(239,68,68,0.12);color:var(--red)}
+.s-lbl{font-size:0.5rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.2rem}
+.s-val{font-size:1rem;font-weight:800}
+.stat-card.s-in .s-val{color:var(--green)}
+.stat-card.s-out .s-val{color:var(--red)}
+
+/* SEC LABEL */
+.sec-lbl{display:flex;align-items:center;gap:0.6rem;font-size:0.5rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.16em;margin-bottom:0.6rem}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ACTIONS */
+.act-box{background:var(--black2);border:1px solid var(--border);border-radius:20px;padding:0.75rem;margin-bottom:0.75rem}
+.act-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem}
+.act-row+.act-row{margin-top:0.4rem}
+.act{display:flex;flex-direction:column;align-items:center;gap:0.4rem;padding:0.8rem 0.2rem 0.65rem;border-radius:13px;text-decoration:none;cursor:pointer;transition:all 0.15s;border:none;background:none}
+.act:active{background:rgba(201,168,76,0.08);transform:scale(0.93)}
+.act-ico{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.05rem}
+.act-lbl{font-size:0.5rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:0.03em;line-height:1.3;text-align:center}
+
+/* TXN */
+.txn-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem}
+.txn-hd span{font-size:0.5rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.16em}
+.txn-all{font-size:0.62rem;font-weight:700;color:var(--gold);text-decoration:none;background:rgba(201,168,76,0.08);padding:0.28rem 0.7rem;border-radius:100px;border:1px solid rgba(201,168,76,0.15)}
+.txn-list{background:var(--black2);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.txn-item{padding:0.85rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(42,34,0,0.6);cursor:pointer;transition:background 0.15s}
+.txn-item:last-child{border-bottom:none}
+.txn-item:active{background:rgba(201,168,76,0.04)}
+.ti-left{display:flex;align-items:center;gap:0.7rem}
+.ti-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0}
+.ti-name{font-size:0.75rem;font-weight:700;margin-bottom:2px}
+.ti-time{font-size:0.56rem;color:var(--muted)}
+.ti-amt{font-size:0.85rem;font-weight:800}
+.ti-amt.cr{color:var(--green)}
+.ti-amt.dr{color:var(--red)}
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--muted)}
+.empty-state i{font-size:2rem;display:block;margin-bottom:0.6rem;opacity:0.15}
+.empty-state p{font-size:0.7rem;font-weight:600}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:0.48rem;font-weight:800;text-transform:uppercase;cursor:pointer;text-decoration:none;flex:1;transition:color 0.18s;padding-top:4px;position:relative}
+.nav-item.active{color:var(--gold)}
+.nav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--gold);border-radius:0 0 4px 4px;display:none}
+.nav-item.active .nav-pip{display:block}
+.nav-item i{font-size:1.05rem}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.fu{animation:fadeUp 0.4s cubic-bezier(.34,1.2,.64,1) both;opacity:0}
+.fu:nth-child(1){animation-delay:.05s}.fu:nth-child(2){animation-delay:.1s}.fu:nth-child(3){animation-delay:.15s}.fu:nth-child(4){animation-delay:.2s}.fu:nth-child(5){animation-delay:.25s}.fu:nth-child(6){animation-delay:.3s}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.lpulse{animation:pulse 1.4s ease infinite}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="sp-crown">👑</div>
+  <div class="sp-name">ROYAL WALLET</div>
+  <div class="sp-bar"><div class="sp-fill"></div></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-crown">👑</div>
+    <div class="sb-av" id="sb-av">R</div>
+    <div class="sb-name" id="sb-name">—</div>
+    <div class="sb-id" id="sb-id">—</div>
+  </div>
+  <div class="sb-body">
+    <div class="sb-cat">Main</div>
+    <a href="dashboard.html" class="sb-item"><div class="sb-ico" style="background:rgba(201,168,76,0.1)"><i class="fa-solid fa-house" style="color:var(--gold)"></i></div>Home</a>
+    <a href="transfer.html" class="sb-item"><div class="sb-ico" style="background:rgba(16,185,129,0.1)"><i class="fa-solid fa-paper-plane" style="color:#10b981"></i></div>Send Money</a>
+    <a href="deposit.html" class="sb-item"><div class="sb-ico" style="background:rgba(56,189,248,0.1)"><i class="fa-solid fa-plus" style="color:#38bdf8"></i></div>Add Money</a>
+    <a href="withdraw.html" class="sb-item"><div class="sb-ico" style="background:rgba(249,115,22,0.1)"><i class="fa-solid fa-arrow-up" style="color:#f97316"></i></div>Withdraw</a>
+    <hr class="sb-div">
+    <div class="sb-cat">Features</div>
+    <a href="bulk.html" class="sb-item"><div class="sb-ico" style="background:rgba(201,168,76,0.1)"><i class="fa-solid fa-layer-group" style="color:var(--gold)"></i></div>Bulk Pay</a>
+    <a href="gift.html" class="sb-item"><div class="sb-ico" style="background:rgba(239,68,68,0.1)"><i class="fa-solid fa-gift" style="color:#ef4444"></i></div>Gift Codes</a>
+    <a href="transactions.html" class="sb-item"><div class="sb-ico" style="background:rgba(56,189,248,0.1)"><i class="fa-solid fa-receipt" style="color:#38bdf8"></i></div>History</a>
+    <a href="settings.html" class="sb-item"><div class="sb-ico" style="background:rgba(201,168,76,0.1)"><i class="fa-solid fa-key" style="color:var(--gold)"></i></div>API Key</a>
+    <a href="support.html" class="sb-item"><div class="sb-ico" style="background:rgba(16,185,129,0.1)"><i class="fa-solid fa-headset" style="color:#10b981"></i></div>Support</a>
+    <hr class="sb-div">
+    <button class="sb-item sb-logout" onclick="logout()"><div class="sb-ico" style="background:rgba(239,68,68,0.1)"><i class="fa-solid fa-right-from-bracket" style="color:#ef4444"></i></div>Logout</button>
+  </div>
+</div>
+
+<div class="header">
+  <div class="h-left">
+    <button class="hbtn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+    <div class="h-logo">👑 Royal Wallet</div>
+  </div>
+  <div class="h-av" id="h-av">R</div>
+</div>
+
+<div class="wrap">
+
+  <div class="bal-card fu">
+    <div class="bc-glow"></div>
+    <div class="bc-crown">👑</div>
+    <div class="bc-label">Available Balance</div>
+    <div class="bc-amt"><sup>₹</sup><span id="balance" class="lpulse">0.00</span></div>
+    <div class="bc-wid"><i class="fa-solid fa-wallet" style="font-size:0.5rem"></i><span id="wallet-id">RW000000</span></div>
+    <div class="bc-actions">
+      <a href="transfer.html" class="bc-btn"><i class="fa-solid fa-paper-plane"></i><span>Send</span></a>
+      <a href="deposit.html" class="bc-btn"><i class="fa-solid fa-plus"></i><span>Add</span></a>
+      <a href="withdraw.html" class="bc-btn"><i class="fa-solid fa-arrow-up"></i><span>Withdraw</span></a>
+      <a href="settings.html" class="bc-btn"><i class="fa-solid fa-key"></i><span>API Key</span></a>
+    </div>
+    <div class="bc-foot">
+      <div>
+        <div class="bc-uname" id="u-name">—</div>
+        <div class="bc-mob" id="u-mob">—</div>
+      </div>
+      <div class="bc-verified"><i class="fa-solid fa-circle-check" style="font-size:0.44rem"></i>Verified</div>
+    </div>
+  </div>
+
+  <div class="stats fu">
+    <div class="stat-card s-in">
+      <div class="s-ico"><i class="fa-solid fa-arrow-down"></i></div>
+      <div class="s-lbl">Total In</div>
+      <div class="s-val">₹<span id="total-in" class="lpulse">0.00</span></div>
+    </div>
+    <div class="stat-card s-out">
+      <div class="s-ico"><i class="fa-solid fa-arrow-up"></i></div>
+      <div class="s-lbl">Total Out</div>
+      <div class="s-val">₹<span id="total-out" class="lpulse">0.00</span></div>
+    </div>
+  </div>
+
+  <div class="sec-lbl fu">Quick Actions 👑</div>
+  <div class="act-box fu">
+    <div class="act-row">
+      <a href="transfer.html" class="act"><div class="act-ico" style="background:rgba(16,185,129,0.1)"><i class="fa-solid fa-paper-plane" style="color:#10b981"></i></div><div class="act-lbl">Send</div></a>
+      <a href="deposit.html" class="act"><div class="act-ico" style="background:rgba(56,189,248,0.1)"><i class="fa-solid fa-plus" style="color:#38bdf8"></i></div><div class="act-lbl">Add Fund</div></a>
+      <a href="withdraw.html" class="act"><div class="act-ico" style="background:rgba(249,115,22,0.1)"><i class="fa-solid fa-arrow-up" style="color:#f97316"></i></div><div class="act-lbl">Withdraw</div></a>
+      <a href="bulk.html" class="act"><div class="act-ico" style="background:rgba(201,168,76,0.1)"><i class="fa-solid fa-layer-group" style="color:var(--gold)"></i></div><div class="act-lbl">Bulk Pay</div></a>
+    </div>
+    <div class="act-row">
+      <a href="gift.html" class="act"><div class="act-ico" style="background:rgba(239,68,68,0.1)"><i class="fa-solid fa-gift" style="color:#ef4444"></i></div><div class="act-lbl">Gift Code</div></a>
+      <a href="transactions.html" class="act"><div class="act-ico" style="background:rgba(56,189,248,0.1)"><i class="fa-solid fa-receipt" style="color:#38bdf8"></i></div><div class="act-lbl">History</div></a>
+      <a href="settings.html" class="act"><div class="act-ico" style="background:rgba(201,168,76,0.1)"><i class="fa-solid fa-key" style="color:var(--gold)"></i></div><div class="act-lbl">API Key</div></a>
+      <a href="support.html" class="act"><div class="act-ico" style="background:rgba(16,185,129,0.1)"><i class="fa-solid fa-headset" style="color:#10b981"></i></div><div class="act-lbl">Support</div></a>
+    </div>
+  </div>
+
+  <div class="txn-hd fu">
+    <span>Recent Transactions</span>
+    <a href="transactions.html" class="txn-all">View All →</a>
+  </div>
+  <div class="txn-list fu" id="txn-list">
+    <div class="empty-state"><i class="fa-solid fa-receipt"></i><p>No transactions yet</p></div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <a href="dashboard.html" class="nav-item active"><div class="nav-pip"></div><i class="fa-solid fa-house"></i>Home</a>
+  <a href="transfer.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-paper-plane"></i>Send</a>
+  <a href="deposit.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-plus"></i>Add</a>
+  <a href="transactions.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-receipt"></i>History</a>
+  <a href="settings.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-key"></i>API</a>
+</div>
+
+<script>
+const API  = '';
+const token= localStorage.getItem('rw_token');
+const user = JSON.parse(localStorage.getItem('rw_user')||'{}');
+if (!token) window.location.href='index.html';
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{document.getElementById('splash').classList.add('hide');setTimeout(()=>{document.getElementById('splash').style.display='none';},500);},2000);
+});
+
+const ini=(user.name||'R')[0].toUpperCase();
+document.getElementById('h-av').textContent   =ini;
+document.getElementById('sb-av').textContent  =ini;
+document.getElementById('sb-name').textContent=user.name||'—';
+document.getElementById('sb-id').textContent  =user.wallet_id||'—';
+document.getElementById('u-name').textContent =user.name||'—';
+document.getElementById('u-mob').textContent  =user.mobile||'—';
+document.getElementById('wallet-id').textContent=user.wallet_id||'RW000000';
+
+function toggleMenu(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('active');}
+function logout(){if(!confirm('Logout karna chahte ho?'))return;localStorage.clear();window.location.href='index.html';}
+
+async function loadData(){
+  try{
+    const br=await fetch(API+'/wallet/balance',{headers:{'Authorization':'Bearer '+token}});
+    const bd=await br.json();
+    if(bd.status==='success'){
+      const el=document.getElementById('balance');
+      el.classList.remove('lpulse');
+      el.textContent=parseFloat(bd.balance).toFixed(2);
+    }
+    const tr=await fetch(API+'/wallet/transactions',{headers:{'Authorization':'Bearer '+token}});
+    const td=await tr.json();
+    if(td.status==='success'&&td.transactions?.length){
+      let tin=0,tout=0,html='';
+      td.transactions.slice(0,10).forEach(t=>{
+        const isCr=t.receiver_id&&(t.receiver_id._id===user.id||t.receiver_id===user.id);
+        const amt=parseFloat(t.amount).toFixed(2);
+        if(isCr)tin+=parseFloat(amt);else tout+=parseFloat(amt);
+        const name=isCr?(t.sender_id?.name||t.sender_id?.mobile||'System'):(t.receiver_id?.name||t.receiver_id?.mobile||'System');
+        const time=new Date(t.tx_time).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true});
+        const icoBg=isCr?'rgba(16,185,129,0.12)':'rgba(239,68,68,0.12)';
+        const icoClr=isCr?'#10b981':'#ef4444';
+        const icoNm=isCr?'arrow-down':'arrow-up';
+        html+=`<div class="txn-item"><div class="ti-left"><div class="ti-ico" style="background:${icoBg}"><i class="fa-solid fa-${icoNm}" style="color:${icoClr}"></i></div><div><div class="ti-name">${name}</div><div class="ti-time">${time}</div></div></div><div class="ti-amt ${isCr?'cr':'dr'}">${isCr?'+':'-'}₹${amt}</div></div>`;
+      });
+      document.getElementById('txn-list').innerHTML=html;
+      const tin_el=document.getElementById('total-in');
+      const tout_el=document.getElementById('total-out');
+      tin_el.classList.remove('lpulse');tout_el.classList.remove('lpulse');
+      tin_el.textContent=tin.toFixed(2);tout_el.textContent=tout.toFixed(2);
+    }
+  }catch(e){}
+}
+loadData();
+</script>
+</body>
+</html>
