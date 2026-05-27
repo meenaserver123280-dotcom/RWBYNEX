@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Money | Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--gold2:#e8c97a;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444;--sky:#38bdf8}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;padding-bottom:80px}
+.header{background:rgba(8,8,8,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 1.1rem;display:flex;align-items:center;gap:0.8rem;position:sticky;top:0;z-index:100}
+.back-btn{width:36px;height:36px;background:var(--black3);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;font-size:0.85rem;flex-shrink:0}
+.h-title{font-size:1rem;font-weight:800}.h-title span{color:var(--gold)}
+.wrap{max-width:480px;margin:0 auto;padding:1rem}
+.card{background:var(--black2);border:1px solid var(--border);border-radius:20px;padding:1.3rem;margin-bottom:0.9rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.c-title{font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:1rem}
+.steps{display:flex;gap:0;margin-bottom:1.2rem}
+.step{flex:1;text-align:center;position:relative}
+.step::after{content:'';position:absolute;top:15px;left:50%;width:100%;height:1px;background:var(--border);z-index:0}
+.step:last-child::after{display:none}
+.sc{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;margin:0 auto 0.35rem;position:relative;z-index:1;border:1.5px solid var(--border);background:var(--black3);color:var(--muted);transition:all 0.3s}
+.sc.active{background:var(--gold);border-color:var(--gold);color:#000}
+.sc.done{background:var(--green);border-color:var(--green);color:#fff}
+.s-lbl{font-size:0.48rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em}
+.step.active .s-lbl{color:var(--gold)}
+.step.done .s-lbl{color:var(--green)}
+.upi-card{background:linear-gradient(145deg,#1a1500,#0d0d00);border:1px solid var(--border);border-radius:16px;padding:1.2rem;text-align:center;margin-bottom:1rem}
+.upi-lbl{font-size:0.52rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.5rem}
+.upi-id{font-size:1rem;font-weight:800;color:var(--gold);font-family:monospace;margin-bottom:0.6rem}
+.copy-btn{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:100px;padding:0.3rem 0.9rem;font-size:0.62rem;font-weight:700;color:var(--gold);cursor:pointer;transition:all 0.15s}
+.copy-btn:active{background:rgba(201,168,76,0.2)}
+.amt-big{font-size:2rem;font-weight:800;color:var(--gold);text-align:center;padding:1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;outline:none;width:100%;font-family:'DM Sans',sans-serif;margin-bottom:0.85rem}
+.amt-big:focus{border-color:var(--gold)}
+.amt-big::placeholder{color:var(--muted);font-size:1.1rem;font-weight:400}
+.quick-amts{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.85rem}
+.qa{padding:0.4rem 0.9rem;background:var(--black3);border:1px solid var(--border);border-radius:100px;font-size:0.68rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all 0.15s}
+.qa.sel,.qa:active{background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.3);color:var(--gold)}
+.upi-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:0.85rem}
+.app-btn{display:flex;flex-direction:column;align-items:center;gap:0.35rem;padding:0.65rem 0.2rem;background:var(--black3);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:all 0.15s}
+.app-btn:active{background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);transform:scale(0.93)}
+.app-btn i{font-size:1.1rem}
+.app-btn span{font-size:0.48rem;font-weight:700;color:var(--text2);text-transform:uppercase}
+.amt-show{text-align:center;margin-bottom:0.85rem}
+.amt-show-lbl{font-size:0.58rem;color:var(--muted);font-weight:700;margin-bottom:0.3rem}
+.amt-show-val{font-size:1.8rem;font-weight:800;color:var(--gold)}
+.notice{background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.15);border-radius:13px;padding:0.85rem 1rem;margin-bottom:0.85rem;font-size:0.72rem;color:var(--sky);line-height:1.6}
+.inp-grp{margin-bottom:0.85rem}
+.inp-grp label{display:block;font-size:0.52rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.16em;margin-bottom:0.4rem}
+.inp{width:100%;padding:0.85rem 1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;font-size:0.88rem;font-weight:500;outline:none;transition:all 0.2s;font-family:'DM Sans',sans-serif;color:var(--text)}
+.inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.08)}
+.inp::placeholder{color:var(--muted);font-weight:400}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
+.btn{padding:0.92rem;background:linear-gradient(135deg,var(--gold),#a07830,var(--gold));color:#000;border:none;border-radius:13px;font-size:0.8rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.btn:active{transform:scale(0.97)}
+.btn:disabled{opacity:0.5}
+.btn.loading .btn-text{display:none}
+.btn.loading .spinner{display:inline-block}
+.spinner{display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-back{background:var(--black3);color:var(--text2);border:1px solid var(--border);box-shadow:none}
+.btn-back:active{background:#2a2200}
+.btn-full{grid-column:1/-1}
+.msg{padding:0.7rem 1rem;border-radius:12px;font-size:0.78rem;font-weight:600;margin-bottom:0.85rem;display:none;text-align:center}
+.msg.error{display:block;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
+#success-screen{display:none;text-align:center;padding:1rem 0}
+.s-tick{width:72px;height:72px;background:linear-gradient(135deg,var(--green),#059669);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.8rem;color:white;box-shadow:0 8px 24px rgba(16,185,129,0.3)}
+.s-title{font-size:1.2rem;font-weight:800;margin-bottom:0.3rem}
+.s-sub{font-size:0.72rem;color:var(--muted);margin-bottom:1.2rem;line-height:1.6}
+.txn-chip{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:100px;padding:0.4rem 1rem;font-size:0.65rem;font-weight:700;color:var(--gold);margin-bottom:1.2rem;font-family:monospace}
+.btn-home{display:block;padding:0.92rem;background:linear-gradient(135deg,var(--gold),#a07830);color:#000;border:none;border-radius:13px;font-size:0.85rem;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;font-family:'DM Sans',sans-serif}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:0.48rem;font-weight:800;text-transform:uppercase;cursor:pointer;text-decoration:none;flex:1;transition:color 0.18s;padding-top:4px;position:relative}
+.nav-item.active{color:var(--gold)}
+.nav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--gold);border-radius:0 0 4px 4px;display:none}
+.nav-item.active .nav-pip{display:block}
+.nav-item i{font-size:1.05rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+  <div class="h-title">Add <span>Money</span></div>
+</div>
+
+<div class="wrap">
+  <div class="card" id="main-card">
+    <div class="steps">
+      <div class="step active" id="step1"><div class="sc active" id="sc1">1</div><div class="s-lbl">Amount</div></div>
+      <div class="step" id="step2"><div class="sc" id="sc2">2</div><div class="s-lbl">Pay UPI</div></div>
+      <div class="step" id="step3"><div class="sc" id="sc3">3</div><div class="s-lbl">Submit UTR</div></div>
+    </div>
+
+    <div id="s1">
+      <div class="c-title">Enter Amount</div>
+      <input class="amt-big" type="number" id="amount" placeholder="₹ 0">
+      <div class="quick-amts">
+        <div class="qa" onclick="setAmt(100,this)">₹100</div>
+        <div class="qa" onclick="setAmt(200,this)">₹200</div>
+        <div class="qa" onclick="setAmt(500,this)">₹500</div>
+        <div class="qa" onclick="setAmt(1000,this)">₹1000</div>
+        <div class="qa" onclick="setAmt(2000,this)">₹2000</div>
+      </div>
+      <button class="btn btn-full" onclick="goStep2()"><span class="btn-text">Next — Pay via UPI <i class="fa-solid fa-arrow-right"></i></span></button>
+    </div>
+
+    <div id="s2" style="display:none">
+      <div class="c-title">Pay via UPI</div>
+      <div class="upi-card">
+        <div class="upi-lbl">Royal Wallet UPI</div>
+        <div class="upi-id" id="upi-id-show">royalwallet@upi</div>
+        <div class="copy-btn" onclick="copyUPI()"><i class="fa-regular fa-copy"></i> Copy UPI ID</div>
+      </div>
+      <div class="amt-show">
+        <div class="amt-show-lbl">Amount to Pay</div>
+        <div class="amt-show-val">₹<span id="show-amt">0</span></div>
+      </div>
+      <div class="upi-apps">
+        <div class="app-btn" onclick="openUPI()"><i class="fa-solid fa-g" style="color:#4285f4"></i><span>GPay</span></div>
+        <div class="app-btn" onclick="openUPI()"><i class="fa-solid fa-mobile" style="color:#5f259f"></i><span>PhonePe</span></div>
+        <div class="app-btn" onclick="openUPI()"><i class="fa-solid fa-wallet" style="color:#00b9f1"></i><span>Paytm</span></div>
+        <div class="app-btn" onclick="openUPI()"><i class="fa-solid fa-landmark" style="color:#007935"></i><span>BHIM</span></div>
+      </div>
+      <div class="notice"><i class="fa-solid fa-circle-info"></i> Payment ke baad <b>UTR / Reference number</b> note karo. Next step mein enter karna hoga.</div>
+      <div class="btn-grid">
+        <button class="btn btn-back" onclick="goStep1()">← Back</button>
+        <button class="btn" onclick="goStep3()"><span class="btn-text">Paid — Enter UTR <i class="fa-solid fa-arrow-right"></i></span></button>
+      </div>
+    </div>
+
+    <div id="s3" style="display:none">
+      <div class="c-title">Submit UTR</div>
+      <div id="msg" class="msg"></div>
+      <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:13px;padding:0.85rem 1rem;margin-bottom:0.85rem;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:0.65rem;color:var(--muted)">Amount Paid</span>
+        <span style="font-size:1rem;font-weight:800;color:var(--gold)">₹<span id="confirm-amt">0</span></span>
+      </div>
+      <div class="inp-grp">
+        <label>UTR / Reference Number</label>
+        <input class="inp" type="text" id="utr" placeholder="Enter UTR number" maxlength="20">
+      </div>
+      <div class="notice"><i class="fa-solid fa-clock"></i> Admin <b>48 ghante</b> mein verify karega. Verify hone par balance add ho jaega.</div>
+      <div class="btn-grid">
+        <button class="btn btn-back" onclick="goStep2()">← Back</button>
+        <button class="btn" id="submit-btn" onclick="submitDeposit()">
+          <span class="spinner"></span>
+          <span class="btn-text"><i class="fa-solid fa-paper-plane"></i> Submit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="success-screen">
+    <div class="card">
+      <div class="s-tick"><i class="fa-solid fa-check"></i></div>
+      <div class="s-title">Request Submitted! 👑</div>
+      <div class="s-sub">Admin 48 ghante mein verify karega.<br>Telegram pe notification aegi.</div>
+      <div class="txn-chip"><i class="fa-solid fa-receipt"></i> <span id="success-txid">—</span></div>
+      <a href="dashboard.html" class="btn-home"><i class="fa-solid fa-house"></i> Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="dashboard.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-house"></i>Home</a>
+  <a href="transfer.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-paper-plane"></i>Send</a>
+  <a href="deposit.html" class="nav-item active"><div class="nav-pip"></div><i class="fa-solid fa-plus"></i>Add</a>
+  <a href="transactions.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-receipt"></i>History</a>
+  <a href="settings.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-key"></i>API</a>
+</div>
+
+<script>
+const API='';
+const token=localStorage.getItem('rw_token');
+if(!token)window.location.href='index.html';
+let selAmt=0;
+let upiId='royalwallet@upi';
+
+async function loadUPI(){
+  try{
+    const r=await fetch(API+'/wallet/deposit-info',{headers:{'Authorization':'Bearer '+token}});
+    const d=await r.json();
+    if(d.status==='success'){upiId=d.upi_id;document.getElementById('upi-id-show').textContent=d.upi_id;}
+  }catch(e){}
+}
+loadUPI();
+
+function setAmt(v,el){document.getElementById('amount').value=v;document.querySelectorAll('.qa').forEach(q=>q.classList.remove('sel'));el.classList.add('sel');}
+
+function setStep(n){
+  [1,2,3].forEach(i=>{
+    const sc=document.getElementById('sc'+i);
+    sc.classList.remove('active','done');
+    document.getElementById('step'+i).classList.remove('active','done');
+    document.getElementById('s'+i).style.display='none';
+  });
+  for(let i=1;i<n;i++){
+    document.getElementById('sc'+i).classList.add('done');
+    document.getElementById('sc'+i).innerHTML='<i class="fa-solid fa-check" style="font-size:0.55rem"></i>';
+    document.getElementById('step'+i).classList.add('done');
+  }
+  document.getElementById('sc'+n).classList.add('active');
+  document.getElementById('step'+n).classList.add('active');
+  document.getElementById('s'+n).style.display='block';
+}
+
+function goStep1(){setStep(1);}
+function goStep2(){
+  const amt=parseFloat(document.getElementById('amount').value);
+  if(!amt||amt<1)return alert('Minimum ₹1 enter karo!');
+  selAmt=amt;
+  document.getElementById('show-amt').textContent=amt;
+  document.getElementById('confirm-amt').textContent=amt;
+  setStep(2);
+}
+function goStep3(){setStep(3);}
+
+function copyUPI(){
+  navigator.clipboard.writeText(upiId).then(()=>{
+    const btn=event.target.closest('.copy-btn');
+    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(()=>{btn.innerHTML='<i class="fa-regular fa-copy"></i> Copy UPI ID';},2000);
+  }).catch(()=>alert('UPI ID: '+upiId));
+}
+
+function openUPI(){
+  window.location.href=`upi://pay?pa=${upiId}&pn=Royal+Wallet&am=${selAmt}&cu=INR&tn=Royal+Wallet+Deposit`;
+}
+
+function showMsg(t,type){const m=document.getElementById('msg');m.textContent=t;m.className='msg '+type;}
+
+async function submitDeposit(){
+  const utr=document.getElementById('utr').value.trim();
+  if(!utr||utr.length<6)return showMsg('Valid UTR enter karo!','error');
+  const btn=document.getElementById('submit-btn');
+  btn.classList.add('loading');btn.disabled=true;
+  try{
+    const r=await fetch(API+'/wallet/deposit',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({amount:selAmt,utr})});
+    const d=await r.json();
+    if(d.status==='success'){
+      document.getElementById('success-txid').textContent=d.tx_id;
+      document.getElementById('main-card').style.display='none';
+      document.getElementById('success-screen').style.display='block';
+    }else{showMsg(d.message||'Error','error');}
+  }catch(e){showMsg('Network error','error');}
+  btn.classList.remove('loading');btn.disabled=false;
+}
+</script>
+</body>
+</html>
