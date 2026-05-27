@@ -3,7 +3,7 @@ const jwt     = require('jsonwebtoken');
 const User    = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'royalwallet_secret_2026';
-const BOT_TOKEN  = process.env.BOT_TOKEN  || '';
+const BOT_TOKEN  = process.env.BOT_TOKEN  || '8628927921:AAFwhTSTJ5tNGNuy9gYY3_jpb6vb0rAJZtU';
 const ADMIN_TG   = process.env.ADMIN_TG_ID || '';
 
 const otpStore    = {};
