@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support | Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444;--sky:#38bdf8}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;padding-bottom:80px}
+.header{background:rgba(8,8,8,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 1.1rem;display:flex;align-items:center;gap:0.8rem;position:sticky;top:0;z-index:100}
+.back-btn{width:36px;height:36px;background:var(--black3);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;font-size:0.85rem}
+.h-title{font-size:1rem;font-weight:800}.h-title span{color:var(--gold)}
+.wrap{max-width:480px;margin:0 auto;padding:1rem}
+.hero{text-align:center;padding:2rem 1rem;background:linear-gradient(145deg,#1a1500,#0d0d00);border:1px solid var(--border);border-radius:20px;margin-bottom:0.9rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.hero-icon{font-size:2.5rem;margin-bottom:0.6rem}
+.hero-title{font-size:1.1rem;font-weight:800;color:var(--gold);margin-bottom:0.3rem}
+.hero-sub{font-size:0.7rem;color:var(--muted);line-height:1.5}
+.card{background:var(--black2);border:1px solid var(--border);border-radius:20px;padding:1.3rem;margin-bottom:0.9rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.c-title{font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:1rem}
+.contact-item{display:flex;align-items:center;gap:0.85rem;padding:0.9rem;background:var(--black3);border:1px solid var(--border);border-radius:14px;text-decoration:none;margin-bottom:0.6rem;transition:all 0.15s}
+.contact-item:active{background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2)}
+.ci-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ci-title{font-size:0.82rem;font-weight:700;color:var(--text)}
+.ci-sub{font-size:0.6rem;color:var(--muted);margin-top:1px}
+.ci-arrow{margin-left:auto;color:var(--muted);font-size:0.75rem}
+.faq-item{border-bottom:1px solid var(--border);padding-bottom:0.85rem;margin-bottom:0.85rem}
+.faq-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.faq-q{font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.35rem}
+.faq-a{font-size:0.72rem;color:var(--text2);line-height:1.6}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:0.48rem;font-weight:800;text-transform:uppercase;cursor:pointer;text-decoration:none;flex:1;transition:color 0.18s;padding-top:4px;position:relative}
+.nav-item.active{color:var(--gold)}
+.nav-pip{position:absolute;top:0;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--gold);border-radius:0 0 4px 4px;display:none}
+.nav-item.active .nav-pip{display:block}
+.nav-item i{font-size:1.05rem}
+</style>
+</head>
+<body>
+<div class="header">
+  <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+  <div class="h-title">Sup<span>port</span></div>
+</div>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-icon">👑</div>
+    <div class="hero-title">Royal Support</div>
+    <div class="hero-sub">Koi bhi problem hai? Hum yahan hain. 24/7 support available.</div>
+  </div>
+  <div class="card">
+    <div class="c-title">Contact Us</div>
+    <a href="https://t.me/RoyalWalletSupport" target="_blank" class="contact-item">
+      <div class="ci-ico" style="background:rgba(56,189,248,0.1)"><i class="fa-brands fa-telegram" style="color:var(--sky)"></i></div>
+      <div><div class="ci-title">Telegram Support</div><div class="ci-sub">@RoyalWalletSupport</div></div>
+      <i class="fa-solid fa-arrow-right ci-arrow"></i>
+    </a>
+    <a href="https://t.me/RoyalWalletOfficial" target="_blank" class="contact-item">
+      <div class="ci-ico" style="background:rgba(201,168,76,0.1)"><i class="fa-brands fa-telegram" style="color:var(--gold)"></i></div>
+      <div><div class="ci-title">Official Channel</div><div class="ci-sub">Updates & Announcements</div></div>
+      <i class="fa-solid fa-arrow-right ci-arrow"></i>
+    </a>
+  </div>
+  <div class="card">
+    <div class="c-title">FAQ</div>
+    <div class="faq-item">
+      <div class="faq-q">Withdrawal kitne time mein hoti hai?</div>
+      <div class="faq-a">Withdrawal request 48 ghante ke andar process ki jaati hai. Admin manually approve karta hai.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Deposit verify kyun nahi hua?</div>
+      <div class="faq-a">Deposit 48 ghante mein verify hoti hai. Sahi UTR number dena zaroori hai. Wrong UTR pe deposit reject ho sakta hai.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">API key kaise use karein?</div>
+      <div class="faq-a">Settings page pe jaao, API key copy karo. Phir /payment?key=YOUR_KEY&to=MOBILE&amt=AMOUNT endpoint use karo.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">PIN bhool gaya?</div>
+      <div class="faq-a">Login page pe "Forgot PIN?" pe click karo. Telegram OTP se PIN reset kar sakte ho.</div>
+    </div>
+  </div>
+</div>
+<div class="bottom-nav">
+  <a href="dashboard.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-house"></i>Home</a>
+  <a href="transfer.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-paper-plane"></i>Send</a>
+  <a href="deposit.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-plus"></i>Add</a>
+  <a href="transactions.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-receipt"></i>History</a>
+  <a href="settings.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-key"></i>API</a>
+</div>
+</body>
+</html>
