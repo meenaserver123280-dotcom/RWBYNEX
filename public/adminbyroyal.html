@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--gold2:#e8c97a;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444;--orange:#f97316;--sky:#38bdf8}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(201,168,76,0.08) 0%,transparent 60%),var(--black)}
+.login-box{background:var(--black2);border:1px solid var(--border);border-radius:24px;padding:2.5rem 2rem;width:100%;max-width:380px;text-align:center;position:relative;overflow:hidden}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent)}
+.login-crown{font-size:2.5rem;margin-bottom:0.6rem;filter:drop-shadow(0 0 16px rgba(201,168,76,0.5))}
+.login-title{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);margin-bottom:0.2rem}
+.login-sub{font-size:0.58rem;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:2rem}
+.login-inp{width:100%;padding:0.88rem 1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;font-size:0.9rem;outline:none;color:var(--text);font-family:monospace;text-align:center;letter-spacing:0.15em;margin-bottom:1rem;transition:border 0.2s}
+.login-inp:focus{border-color:var(--gold)}
+.login-btn{width:100%;padding:0.9rem;background:linear-gradient(135deg,var(--gold),#a07830,var(--gold));color:#000;border:none;border-radius:13px;font-weight:800;font-size:0.88rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.login-btn:active{transform:scale(0.97)}
+.login-err{color:var(--red);font-size:0.72rem;margin-top:0.6rem;display:none}
+
+/* LAYOUT */
+#main-screen{display:none}
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--black2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;overflow-y:auto;transition:transform 0.3s}
+.sb-logo{padding:1.4rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+.sb-crown{font-size:1.2rem;margin-bottom:0.3rem}
+.sb-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold)}
+.sb-sub{font-size:0.45rem;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-top:2px}
+.sb-nav{padding:0.75rem;flex:1}
+.sb-sec{font-size:0.44rem;font-weight:800;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;padding:0.6rem 0.5rem 0.3rem}
+.sb-link{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 0.75rem;border-radius:10px;color:var(--text2);font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.sb-link:hover,.sb-link.active{background:rgba(201,168,76,0.08);color:var(--gold)}
+.sb-link i{width:16px;text-align:center;font-size:0.78rem}
+.sb-foot{padding:0.75rem;border-top:1px solid var(--border)}
+.sb-logout{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 0.75rem;border-radius:10px;color:var(--red);font-size:0.75rem;font-weight:600;cursor:pointer;width:100%;border:none;background:none}
+.sb-logout:hover{background:rgba(239,68,68,0.08)}
+
+/* CONTENT */
+.content{margin-left:220px;flex:1;padding:1.5rem}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.page-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold)}
+.badge{background:var(--black3);border:1px solid var(--border);border-radius:100px;padding:0.3rem 0.75rem;font-size:0.6rem;font-weight:700;color:var(--text2);font-family:monospace}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.75rem;margin-bottom:1.5rem}
+.stat-card{background:var(--black2);border:1px solid var(--border);border-radius:16px;padding:1.1rem 1.2rem;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.gold::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.stat-card.green::before{background:linear-gradient(90deg,var(--green),#34d399)}
+.stat-card.red::before{background:linear-gradient(90deg,var(--red),#f87171)}
+.stat-card.sky::before{background:linear-gradient(90deg,var(--sky),#38bdf8)}
+.stat-card.orange::before{background:linear-gradient(90deg,var(--orange),#fbbf24)}
+.stat-ico{font-size:0.85rem;margin-bottom:0.5rem}
+.stat-card.gold .stat-ico{color:var(--gold)}
+.stat-card.green .stat-ico{color:var(--green)}
+.stat-card.red .stat-ico{color:var(--red)}
+.stat-card.sky .stat-ico{color:var(--sky)}
+.stat-card.orange .stat-ico{color:var(--orange)}
+.stat-val{font-family:monospace;font-size:1.3rem;font-weight:700;margin-bottom:0.2rem}
+.stat-lbl{font-size:0.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-weight:700}
+
+/* CARD */
+.card{background:var(--black2);border:1px solid var(--border);border-radius:16px;padding:1.2rem;margin-bottom:1rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.card-title{font-size:0.78rem;font-weight:800;color:var(--text)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:0.5rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;padding:0.6rem 0.8rem;text-align:left;border-bottom:1px solid var(--border)}
+td{font-size:0.7rem;padding:0.75rem 0.8rem;border-bottom:1px solid rgba(42,34,0,0.4);color:var(--text2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(201,168,76,0.02)}
+.mono{font-family:monospace;font-size:0.62rem}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:0.52rem;font-weight:800}
+.tag.success{background:rgba(16,185,129,0.12);color:var(--green)}
+.tag.pending{background:rgba(249,115,22,0.12);color:var(--orange)}
+.tag.failed,.tag.rejected{background:rgba(239,68,68,0.12);color:var(--red)}
+.tag.info{background:rgba(56,189,248,0.12);color:var(--sky)}
+.tag.gold{background:rgba(201,168,76,0.12);color:var(--gold)}
+
+/* INPUTS */
+.inp-row{display:flex;gap:0.6rem;margin-bottom:0.75rem;flex-wrap:wrap}
+.inp{flex:1;min-width:130px;padding:0.65rem 0.9rem;background:var(--black3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:0.75rem;outline:none;font-family:'DM Sans',sans-serif;transition:border 0.2s}
+.inp:focus{border-color:var(--gold)}
+.inp::placeholder{color:var(--muted)}
+select.inp{cursor:pointer}
+textarea.inp{min-height:100px;resize:vertical}
+
+/* BUTTONS */
+.btn{padding:0.6rem 1rem;border-radius:10px;font-size:0.7rem;font-weight:700;cursor:pointer;border:none;transition:all 0.15s;font-family:'DM Sans',sans-serif}
+.btn:active{transform:scale(0.96)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#a07830);color:#000}
+.btn-green{background:rgba(16,185,129,0.12);color:var(--green);border:1px solid rgba(16,185,129,0.25)}
+.btn-red{background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25)}
+.btn-orange{background:rgba(249,115,22,0.12);color:var(--orange);border:1px solid rgba(249,115,22,0.25)}
+.btn-sky{background:rgba(56,189,248,0.12);color:var(--sky);border:1px solid rgba(56,189,248,0.25)}
+.btn-sm{padding:0.28rem 0.6rem;font-size:0.58rem;border-radius:7px}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--black2);border:1px solid var(--border);border-radius:12px;padding:0.85rem 1.2rem;font-size:0.75rem;font-weight:600;z-index:999;transform:translateY(100px);opacity:0;transition:all 0.3s;max-width:280px}
+#toast.show{transform:none;opacity:1}
+#toast.success{border-color:var(--green);color:var(--green)}
+#toast.error{border-color:var(--red);color:var(--red)}
+
+/* PAGINATION */
+.pagination{display:flex;gap:0.4rem;align-items:center;justify-content:flex-end;margin-top:0.75rem}
+.pg-btn{padding:0.3rem 0.65rem;border-radius:7px;font-size:0.62rem;font-weight:700;cursor:pointer;background:var(--black3);border:1px solid var(--border);color:var(--text2)}
+.pg-btn.active{background:var(--gold);color:#000;border-color:var(--gold)}
+.pg-info{font-size:0.58rem;color:var(--muted)}
+
+/* SECTIONS */
+.section{display:none}
+.section.active{display:block}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:none}
+  .content{margin-left:0;padding:1rem}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .mob-menu{display:flex!important}
+}
+.mob-menu{display:none;width:36px;height:36px;background:var(--black3);border:1px solid var(--border);border-radius:10px;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-crown">👑</div>
+    <div class="login-title">Royal Admin</div>
+    <div class="login-sub">Secure Control Panel</div>
+    <input type="password" class="login-inp" id="login-inp" placeholder="••••••••••••">
+    <button class="login-btn" onclick="doLogin()">👑 Access Panel</button>
+    <div class="login-err" id="login-err">❌ Wrong credentials</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main-screen">
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-crown">👑</div>
+      <div class="sb-title">Royal Admin</div>
+      <div class="sb-sub">Control Panel</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Overview</div>
+      <button class="sb-link active" onclick="showSec('dashboard')"><i class="fa-solid fa-chart-pie"></i>Dashboard</button>
+      <div class="sb-sec">Management</div>
+      <button class="sb-link" onclick="showSec('users')"><i class="fa-solid fa-users"></i>Users</button>
+      <button class="sb-link" onclick="showSec('transactions')"><i class="fa-solid fa-receipt"></i>Transactions</button>
+      <button class="sb-link" onclick="showSec('withdrawals')"><i class="fa-solid fa-arrow-up"></i>Withdrawals</button>
+      <button class="sb-link" onclick="showSec('deposits')"><i class="fa-solid fa-arrow-down"></i>Deposits</button>
+      <div class="sb-sec">Actions</div>
+      <button class="sb-link" onclick="showSec('balance')"><i class="fa-solid fa-wallet"></i>Balance</button>
+      <button class="sb-link" onclick="showSec('gifts')"><i class="fa-solid fa-gift"></i>Gift Codes</button>
+      <button class="sb-link" onclick="showSec('broadcast')"><i class="fa-solid fa-bullhorn"></i>Broadcast</button>
+      <button class="sb-link" onclick="showSec('bulk')"><i class="fa-solid fa-trash"></i>Bulk Delete</button>
+      <div class="sb-sec">System</div>
+      <button class="sb-link" onclick="showSec('logs')"><i class="fa-solid fa-scroll"></i>Activity Logs</button>
+    </div>
+    <div class="sb-foot">
+      <button class="sb-logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <button class="mob-menu" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title" id="page-title">👑 Dashboard</div>
+      </div>
+      <div style="display:flex;gap:0.5rem">
+        <div class="badge" id="time-badge">—</div>
+        <div class="badge">🟢 Live</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="sec-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card gold"><div class="stat-ico"><i class="fa-solid fa-users"></i></div><div class="stat-val" id="s-users">—</div><div class="stat-lbl">Total Users</div></div>
+        <div class="stat-card sky"><div class="stat-ico"><i class="fa-solid fa-user-plus"></i></div><div class="stat-val" id="s-today-users">—</div><div class="stat-lbl">Today Joined</div></div>
+        <div class="stat-card green"><div class="stat-ico"><i class="fa-solid fa-indian-rupee-sign"></i></div><div class="stat-val" id="s-balance">—</div><div class="stat-lbl">Total Balance</div></div>
+        <div class="stat-card orange"><div class="stat-ico"><i class="fa-solid fa-receipt"></i></div><div class="stat-val" id="s-txns">—</div><div class="stat-lbl">Total Txns</div></div>
+        <div class="stat-card red"><div class="stat-ico"><i class="fa-solid fa-clock"></i></div><div class="stat-val" id="s-pend-w">—</div><div class="stat-lbl">Pending Withdraw</div></div>
+        <div class="stat-card sky"><div class="stat-ico"><i class="fa-solid fa-arrow-down"></i></div><div class="stat-val" id="s-pend-d">—</div><div class="stat-lbl">Pending Deposit</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Recent Transactions</div><button class="btn btn-gold btn-sm" onclick="showSec('transactions')">View All</button></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Txn ID</th><th>From</th><th>To</th><th>Amount</th><th>Type</th><th>Status</th><th>Time</th></tr></thead><tbody id="recent-txns"><tr><td colspan="7" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="section" id="sec-users">
+      <div class="card">
+        <div class="card-head"><div class="card-title">All Users</div><div class="badge" id="users-count">—</div></div>
+        <div class="inp-row"><input class="inp" id="user-search" placeholder="Search name / mobile / wallet ID..." oninput="searchUsers()"></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Mobile</th><th>Wallet ID</th><th>Balance</th><th>TG ID</th><th>Joined</th><th>Actions</th></tr></thead><tbody id="users-table"><tr><td colspan="7" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody></table></div>
+        <div class="pagination" id="users-pg"></div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="section" id="sec-transactions">
+      <div class="card">
+        <div class="card-head"><div class="card-title">All Transactions</div><div class="badge" id="txns-count">—</div></div>
+        <div class="inp-row">
+          <select class="inp" id="txn-type" onchange="loadTxns(1)" style="max-width:150px">
+            <option value="">All Types</option>
+            <option value="transfer">Transfer</option>
+            <option value="withdraw">Withdraw</option>
+            <option value="deposit">Deposit</option>
+            <option value="admin_credit">Admin Credit</option>
+            <option value="admin_debit">Admin Debit</option>
+          </select>
+          <select class="inp" id="txn-status" onchange="loadTxns(1)" style="max-width:150px">
+            <option value="">All Status</option>
+            <option value="success">Success</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>Txn ID</th><th>From</th><th>To</th><th>Amount</th><th>Type</th><th>Status</th><th>Remark</th><th>Time</th></tr></thead><tbody id="txns-table"><tr><td colspan="8" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody></table></div>
+        <div class="pagination" id="txns-pg"></div>
+      </div>
+    </div>
+
+    <!-- WITHDRAWALS -->
+    <div class="section" id="sec-withdrawals">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Withdrawals</div>
+          <div style="display:flex;gap:0.5rem">
+            <button class="btn btn-orange btn-sm" onclick="loadWithdrawals('pending')">Pending</button>
+            <button class="btn btn-green btn-sm" onclick="loadWithdrawals('success')">Approved</button>
+            <button class="btn btn-red btn-sm" onclick="loadWithdrawals('rejected')">Rejected</button>
+          </div>
+        </div>
+        <div class="badge" id="with-count" style="margin-bottom:0.75rem">—</div>
+        <div class="tbl-wrap"><table><thead><tr><th>Txn ID</th><th>User</th><th>Mobile</th><th>Amount</th><th>UPI/Remark</th><th>Status</th><th>Time</th><th>Actions</th></tr></thead><tbody id="with-table"><tr><td colspan="8" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- DEPOSITS -->
+    <div class="section" id="sec-deposits">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Deposits</div>
+          <div style="display:flex;gap:0.5rem">
+            <button class="btn btn-orange btn-sm" onclick="loadDeposits('pending')">Pending</button>
+            <button class="btn btn-green btn-sm" onclick="loadDeposits('success')">Approved</button>
+            <button class="btn btn-red btn-sm" onclick="loadDeposits('rejected')">Rejected</button>
+          </div>
+        </div>
+        <div class="badge" id="dep-count" style="margin-bottom:0.75rem">—</div>
+        <div class="tbl-wrap"><table><thead><tr><th>Txn ID</th><th>User</th><th>Mobile</th><th>Amount</th><th>UTR</th><th>Status</th><th>Time</th><th>Actions</th></tr></thead><tbody id="dep-table"><tr><td colspan="8" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- BALANCE -->
+    <div class="section" id="sec-balance">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+        <div class="card">
+          <div class="card-head"><div class="card-title">➕ Add Balance</div></div>
+          <div class="inp-row" style="flex-direction:column">
+            <input class="inp" id="add-mob" placeholder="Mobile number">
+            <input class="inp" id="add-amt" placeholder="Amount (₹)" type="number">
+            <input class="inp" id="add-rem" placeholder="Remark (optional)">
+            <button class="btn btn-green" onclick="addBal()">Add Balance</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">➖ Deduct Balance</div></div>
+          <div class="inp-row" style="flex-direction:column">
+            <input class="inp" id="ded-mob" placeholder="Mobile number">
+            <input class="inp" id="ded-amt" placeholder="Amount (₹)" type="number">
+            <input class="inp" id="ded-rem" placeholder="Remark (optional)">
+            <button class="btn btn-red" onclick="dedBal()">Deduct Balance</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🔍 User Lookup</div></div>
+        <div class="inp-row">
+          <input class="inp" id="lookup-mob" placeholder="Mobile number">
+          <button class="btn btn-sky" onclick="lookupUser()">Search</button>
+        </div>
+        <div id="lookup-result"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🗑️ Delete Account</div></div>
+        <div class="inp-row">
+          <input class="inp" id="del-mob" placeholder="Mobile number">
+          <button class="btn btn-red" onclick="delAccount()">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GIFTS -->
+    <div class="section" id="sec-gifts">
+      <div class="card">
+        <div class="card-head"><div class="card-title">🎁 Create Gift Code</div></div>
+        <div class="inp-row">
+          <input class="inp" id="gc-code" placeholder="Gift code (e.g. ROYAL100)">
+          <input class="inp" id="gc-amt" placeholder="Amount (₹)" type="number">
+          <input class="inp" id="gc-uses" placeholder="Max uses" type="number">
+          <input class="inp" id="gc-exp" placeholder="Expires in hours (optional)" type="number">
+          <button class="btn btn-gold" onclick="createGift()">Create</button>
+        </div>
+        <div id="gift-result"></div>
+      </div>
+    </div>
+
+    <!-- BROADCAST -->
+    <div class="section" id="sec-broadcast">
+      <div class="card">
+        <div class="card-head"><div class="card-title">📢 Broadcast Message</div><div style="font-size:0.62rem;color:var(--muted)">Send to all Telegram users</div></div>
+        <textarea class="inp" id="bc-msg" placeholder="Type message here...&#10;Supports HTML: &lt;b&gt;Bold&lt;/b&gt;, &lt;i&gt;Italic&lt;/i&gt;, &lt;code&gt;Code&lt;/code&gt;" style="width:100%;margin-bottom:0.75rem"></textarea>
+        <div style="display:flex;gap:0.6rem;align-items:center">
+          <button class="btn btn-gold" id="bc-btn" onclick="sendBC()">📤 Send Broadcast</button>
+          <div id="bc-result" style="font-size:0.72rem;color:var(--muted)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BULK DELETE -->
+    <div class="section" id="sec-bulk">
+      <div class="card" style="border-color:rgba(239,68,68,0.3)">
+        <div class="card-head"><div class="card-title" style="color:var(--red)">⚠️ Bulk Delete Accounts</div></div>
+        <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:0.85rem 1rem;margin-bottom:0.85rem;font-size:0.72rem;color:var(--red);line-height:1.6">
+          <i class="fa-solid fa-triangle-exclamation"></i> <b>WARNING:</b> Yeh action permanent hai. Excluded numbers ke alawa sab accounts delete ho jaenge!
+        </div>
+        <div style="margin-bottom:0.75rem">
+          <label style="font-size:0.55rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;display:block;margin-bottom:0.4rem">Exclude These Numbers (One per line — ye delete nahi honge)</label>
+          <textarea class="inp" id="exclude-list" placeholder="9876543210&#10;9123456789&#10;(These accounts will NOT be deleted)" style="width:100%;min-height:120px"></textarea>
+        </div>
+        <button class="btn btn-red" onclick="bulkDelete()" style="width:100%"><i class="fa-solid fa-trash"></i> Delete All Other Accounts</button>
+        <div id="bulk-result" style="margin-top:0.75rem"></div>
+      </div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="section" id="sec-logs">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Activity Logs</div><div class="badge" id="logs-count">—</div></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Action</th><th>Target</th><th>Detail</th><th>Amount</th><th>Time</th></tr></thead><tbody id="logs-table"><tr><td colspan="5" style="text-align:center;color:var(--muted)">Loading...</td></tr></tbody></table></div>
+        <div class="pagination" id="logs-pg"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+const API='';
+let KEY='';
+let uPage=1,tPage=1,lPage=1;
+let searchTimer=null;
+
+// LOGIN
+document.getElementById('login-inp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function doLogin(){
+  KEY=document.getElementById('login-inp').value.trim();
+  if(!KEY)return;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-screen').style.display='block';
+  initAdmin();
+}
+function doLogout(){KEY='';document.getElementById('main-screen').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('login-inp').value='';}
+
+// TOAST
+function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`show ${type}`;setTimeout(()=>{t.className='';},3000);}
+
+// SECTIONS
+const titles={dashboard:'👑 Dashboard',users:'👥 Users',transactions:'💸 Transactions',withdrawals:'⬆️ Withdrawals',deposits:'⬇️ Deposits',balance:'💰 Balance & Actions',gifts:'🎁 Gift Codes',broadcast:'📢 Broadcast',bulk:'🗑️ Bulk Delete',logs:'📋 Activity Logs'};
+function showSec(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  document.getElementById('page-title').textContent=titles[name]||name;
+  document.getElementById('sidebar').classList.remove('open');
+  if(name==='users')loadUsers(1);
+  if(name==='transactions')loadTxns(1);
+  if(name==='withdrawals')loadWithdrawals('pending');
+  if(name==='deposits')loadDeposits('pending');
+  if(name==='logs')loadLogs(1);
+}
+
+function initAdmin(){
+  loadStats();loadRecentTxns();loadUsers(1);loadWithdrawals('pending');loadDeposits('pending');
+  setInterval(()=>{document.getElementById('time-badge').textContent=new Date().toLocaleTimeString('en-IN',{hour12:true});},1000);
+  setInterval(()=>{if(KEY)loadStats();},30000);
+}
+
+// HELPERS
+function fmt(d){if(!d)return'—';return new Date(d).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit',hour12:true});}
+async function apiPost(url,body){try{const r=await fetch(API+url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,key:KEY})});return await r.json();}catch(e){return{status:'error',message:e.message};}}
+function pg(id,cur,total,fn){const el=document.getElementById(id);if(total<=1){el.innerHTML='';return;}let h=`<span class="pg-info">Page ${cur}/${total}</span>`;if(cur>1)h+=`<button class="pg-btn" onclick="${fn.name}(${cur-1})">‹ Prev</button>`;if(cur<total)h+=`<button class="pg-btn" onclick="${fn.name}(${cur+1})">Next ›</button>`;el.innerHTML=h;}
+
+// STATS
+async function loadStats(){
+  try{
+    const r=await fetch(API+'/admin/stats?key='+KEY);
+    const d=await r.json();
+    if(d.status==='success'){
+      const s=d.stats;
+      document.getElementById('s-users').textContent=s.total_users;
+      document.getElementById('s-today-users').textContent=s.today_users;
+      document.getElementById('s-balance').textContent=s.total_balance;
+      document.getElementById('s-txns').textContent=s.total_txns;
+      document.getElementById('s-pend-w').textContent=s.pending_withdraw;
+      document.getElementById('s-pend-d').textContent=s.pending_deposit;
+    }
+  }catch(e){}
+}
+
+// RECENT TXNS
+async function loadRecentTxns(){
+  try{
+    const r=await fetch(API+'/admin/transactions?key='+KEY+'&limit=10');
+    const d=await r.json();
+    if(d.status==='success'){
+      document.getElementById('recent-txns').innerHTML=d.transactions.map(t=>`
+        <tr>
+          <td class="mono">${t.tx_id||'—'}</td>
+          <td>${t.sender_id?.name||'—'}<br><span class="mono" style="font-size:0.56rem;color:var(--muted)">${t.sender_id?.mobile||''}</span></td>
+          <td>${t.receiver_id?.name||'—'}<br><span class="mono" style="font-size:0.56rem;color:var(--muted)">${t.receiver_id?.mobile||''}</span></td>
+          <td style="color:var(--green);font-family:monospace">₹${t.amount}</td>
+          <td><span class="tag info">${t.type}</span></td>
+          <td><span class="tag ${t.status||'success'}">${t.status||'SUCCESS'}</span></td>
+          <td style="font-size:0.6rem">${fmt(t.tx_time)}</td>
+        </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--muted)">No data</td></tr>';
+    }
+  }catch(e){}
+}
+
+// USERS
+async function loadUsers(page=1){
+  uPage=page;
+  const search=document.getElementById('user-search')?.value||'';
+  try{
+    const r=await fetch(`${API}/admin/users?key=${KEY}&page=${page}&limit=20&search=${search}`);
+    const d=await r.json();
+    if(d.status==='success'){
+      document.getElementById('users-count').textContent=`Total: ${d.total}`;
+      document.getElementById('users-table').innerHTML=d.users.map(u=>`
+        <tr>
+          <td><b>${u.name}</b></td>
+          <td class="mono">${u.mobile}</td>
+          <td class="mono" style="color:var(--gold)">${u.wallet_id}</td>
+          <td style="color:var(--green);font-family:monospace">₹${u.balance?.toFixed(2)||'0.00'}</td>
+          <td class="mono" style="font-size:0.58rem">${u.tg_id||'—'}</td>
+          <td style="font-size:0.6rem">${fmt(u.createdAt)}</td>
+          <td><button class="btn btn-red btn-sm" onclick="quickDel('${u.mobile}')">Del</button></td>
+        </tr>`).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--muted)">No users</td></tr>';
+      pg('users-pg',page,Math.ceil(d.total/20),loadUsers);
+    }
+  }catch(e){}
+}
+function searchUsers(){clearTimeout(searchTimer);searchTimer=setTimeout(()=>loadUsers(1),500);}
+function quickDel(mob){if(!confirm(`Delete ${mob}?`))return;delAccountDirect(mob);}
+
+// TRANSACTIONS
+async function loadTxns(page=1){
+  tPage=page;
+  const type=document.getElementById('txn-type')?.value||'';
+  const status=document.getElementById('txn-status')?.value||'';
+  try{
+    const r=await fetch(`${API}/admin/transactions?key=${KEY}&page=${page}&limit=30&type=${type}&status=${status}`);
+    const d=await r.json();
+    if(d.status==='success'){
+      document.getElementById('txns-count').textContent=`Total: ${d.total}`;
+      document.getElementById('txns-table').innerHTML=d.transactions.map(t=>`
+        <tr>
+          <td class="mono">${t.tx_id||'—'}</td>
+          <td>${t.sender_id?.name||'—'}<br><span class="mono" style="font-size:0.56rem;color:var(--muted)">${t.sender_id?.mobile||''}</span></td>
+          <td>${t.receiver_id?.name||'—'}<br><span class="mono" style="font-size:0.56rem;color:var(--muted)">${t.receiver_id?.mobile||''}</span></td>
+          <td style="color:var(--green);font-family:monospace">₹${t.amount}</td>
+          <td><span class="tag info">${t.type}</span></td>
+          <td><span class="tag ${t.status||'success'}">${t.status||'SUCCESS'}</span></td>
+          <td style="font-size:0.6rem;max-width:100px;overflow:hidden;text-overflow:ellipsis">${t.remark||'—'}</td>
+          <td style="font-size:0.6rem">${fmt(t.tx_time)}</td>
+        </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--muted)">No data</td></tr>';
+      pg('txns-pg',page,Math.ceil(d.total/30),loadTxns);
+    }
+  }catch(e){}
+}
+
+// WITHDRAWALS
+async function loadWithdrawals(status='pending'){
+  try{
+    const r=await fetch(`${API}/admin/withdrawals?key=${KEY}&status=${status}`);
+    const d=await r.json();
+    if(d.status==='success'){
+      document.getElementById('with-count').textContent=`${d.total} ${status} withdrawals`;
+      document.getElementById('with-table').innerHTML=d.withdrawals.map(t=>`
+        <tr>
+          <td class="mono">${t.tx_id||'—'}</td>
+          <td>${t.sender_id?.name||'—'}</td>
+          <td class="mono">${t.sender_id?.mobile||'—'}</td>
+          <td style="color:var(--orange);font-family:monospace">₹${t.amount}</td>
+          <td style="font-size:0.62rem;max-width:120px;overflow:hidden;text-overflow:ellipsis">${t.remark||'—'}</td>
+          <td><span class="tag ${t.status}">${t.status}</span></td>
+          <td style="font-size:0.6rem">${fmt(t.tx_time)}</td>
+          <td>${t.status==='pending'?`<div style="display:flex;gap:4px"><button class="btn btn-green btn-sm" onclick="approveW('${t.tx_id}')">✅</button><button class="btn btn-red btn-sm" onclick="rejectW('${t.tx_id}')">❌</button></div>`:'—'}</td>
+        </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--muted)">No withdrawals</td></tr>';
+    }
+  }catch(e){}
+}
+async function approveW(tx_id){if(!confirm(`Approve ${tx_id}?`))return;const r=await apiPost('/admin/approve-withdraw',{tx_id});if(r.status==='success'){toast('✅ Approved!');loadWithdrawals('pending');}else toast('❌ '+r.message,'error');}
+async function rejectW(tx_id){const reason=prompt('Reason:')||'Rejected';if(!confirm(`Reject ${tx_id}?`))return;const r=await apiPost('/admin/reject-withdraw',{tx_id,reason});if(r.status==='success'){toast('Rejected & refunded');loadWithdrawals('pending');}else toast('❌ '+r.message,'error');}
+
+// DEPOSITS
+async function loadDeposits(status='pending'){
+  try{
+    const r=await fetch(`${API}/admin/deposits?key=${KEY}&status=${status}`);
+    const d=await r.json();
+    if(d.status==='success'){
+      document.getElementById('dep-count').textContent=`${d.total} ${status} deposits`;
+      document.getElementById('dep-table').innerHTML=d.deposits.map(t=>`
+        <tr>
+          <td class="mono">${t.tx_id||'—'}</td>
+          <td>${t.receiver_id?.name||'—'}</td>
+          <td class="mono">${t.receiver_id?.mobile||'—'}</td>
+          <td style="color:var(--green);font-family:monospace">₹${t.amount}</td>
+          <td class="mono" style="font-size:0.6rem">${(t.remark||'').replace('UTR:','')}</td>
+          <td><span class="tag ${t.status}">${t.status}</span></td>
+          <td style="font-size:0.6rem">${fmt(t.tx_time)}</td>
+          <td>${t.status==='pending'?`<div style="display:flex;gap:4px"><button class="btn btn-green btn-sm" onclick="approveD('${t.tx_id}')">✅</button><button class="btn btn-red btn-sm" onclick="rejectD('${t.tx_id}')">❌</button></div>`:'—'}</td>
+        </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--muted)">No deposits</td></tr>';
+    }
+  }catch(e){}
+}
+async function approveD(tx_id){if(!confirm(`Approve deposit ${tx_id}?`))return;const r=await apiPost('/admin/approve-deposit',{tx_id});if(r.status==='success'){toast('✅ Deposit approved! Balance added.');loadDeposits('pending');}else toast('❌ '+r.message,'error');}
+async function rejectD(tx_id){const reason=prompt('Reason:')||'Invalid UTR';if(!confirm(`Reject deposit ${tx_id}?`))return;const r=await apiPost('/admin/reject-deposit',{tx_id,reason});if(r.status==='success'){toast('Deposit rejected');loadDeposits('pending');}else toast('❌ '+r.message,'error');}
+
+// BALANCE
+async function addBal(){
+  const mobile=document.getElementById('add-mob').value.trim();
+  const amount=document.getElementById('add-amt').value.trim();
+  const remark=document.getElementById('add-rem').value.trim();
+  if(!mobile||!amount)return toast('Mobile & amount required','error');
+  const r=await apiPost('/admin/add-balance',{mobile,amount,remark});
+  if(r.status==='success'){toast('✅ '+r.message);document.getElementById('add-mob').value='';document.getElementById('add-amt').value='';}
+  else toast('❌ '+r.message,'error');
+}
+async function dedBal(){
+  const mobile=document.getElementById('ded-mob').value.trim();
+  const amount=document.getElementById('ded-amt').value.trim();
+  const remark=document.getElementById('ded-rem').value.trim();
+  if(!mobile||!amount)return toast('Mobile & amount required','error');
+  if(!confirm(`Deduct ₹${amount} from ${mobile}?`))return;
+  const r=await apiPost('/admin/deduct-balance',{mobile,amount,remark});
+  if(r.status==='success'){toast('✅ '+r.message);}else toast('❌ '+r.message,'error');
+}
+async function lookupUser(){
+  const mobile=document.getElementById('lookup-mob').value.trim();
+  if(!mobile)return;
+  const r=await fetch(`${API}/admin/user/${mobile}?key=${KEY}`).then(r=>r.json());
+  const el=document.getElementById('lookup-result');
+  if(r.status==='success'){
+    const u=r.user;
+    el.innerHTML=`<div style="background:var(--black3);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:0.75rem;display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;font-size:0.7rem">
+      <div><div style="color:var(--muted);font-size:0.5rem;text-transform:uppercase">NAME</div><b>${u.name}</b></div>
+      <div><div style="color:var(--muted);font-size:0.5rem;text-transform:uppercase">MOBILE</div><span class="mono">${u.mobile}</span></div>
+      <div><div style="color:var(--muted);font-size:0.5rem;text-transform:uppercase">WALLET</div><span class="mono" style="color:var(--gold)">${u.wallet_id}</span></div>
+      <div><div style="color:var(--muted);font-size:0.5rem;text-transform:uppercase">BALANCE</div><span style="color:var(--green);font-family:monospace">₹${u.balance?.toFixed(2)}</span></div>
+      <div><div style="color:var(--muted);font-size:0.5rem;text-transform:uppercase">TG ID</div><span class="mono">${u.tg_id||'—'}</span></div>
+      <div><div style="color:var(--muted);font-size:0.5rem;text-transform:uppercase">TXNS</div>${u.txn_count}</div>
+      <div><div style="color:var(--muted);font-size:0.5rem;text-transform:uppercase">JOINED</div>${fmt(u.createdAt)}</div>
+    </div>`;
+  }else{el.innerHTML=`<div style="color:var(--red);font-size:0.72rem;margin-top:0.5rem">❌ ${r.message}</div>`;}
+}
+async function delAccount(){
+  const mobile=document.getElementById('del-mob').value.trim();
+  if(!mobile)return toast('Mobile required','error');
+  if(!confirm(`DELETE account ${mobile}? Cannot be undone!`))return;
+  await delAccountDirect(mobile);
+  document.getElementById('del-mob').value='';
+}
+async function delAccountDirect(mobile){
+  const r=await apiPost('/admin/delete-account',{mobile});
+  if(r.status==='success'){toast('🗑️ Deleted!');loadUsers(uPage);}
+  else toast('❌ '+r.message,'error');
+}
+
+// GIFT CODES
+async function createGift(){
+  const code=document.getElementById('gc-code').value.trim();
+  const amount=document.getElementById('gc-amt').value.trim();
+  const max_uses=document.getElementById('gc-uses').value.trim()||'1';
+  const expires_hours=document.getElementById('gc-exp').value.trim();
+  if(!code||!amount)return toast('Code & amount required','error');
+  const r=await apiPost('/admin/create-gift',{code,amount,max_uses,expires_hours});
+  if(r.status==='success'){
+    toast('✅ Gift code created!');
+    document.getElementById('gift-result').innerHTML=`<div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:0.85rem 1rem;margin-top:0.75rem;font-size:0.75rem">
+      <b style="color:var(--gold)">Code: <span style="font-family:monospace">${r.code}</span></b> | Amount: ₹${r.amount} | Uses: ${r.max_uses}
+    </div>`;
+    document.getElementById('gc-code').value='';document.getElementById('gc-amt').value='';
+  }else toast('❌ '+r.message,'error');
+}
+
+// BROADCAST
+async function sendBC(){
+  const msg=document.getElementById('bc-msg').value.trim();
+  if(!msg)return toast('Message required','error');
+  if(!confirm('Send to ALL Telegram users?'))return;
+  const btn=document.getElementById('bc-btn');
+  btn.textContent='⏳ Sending...';btn.disabled=true;
+  const r=await apiPost('/admin/broadcast',{message:msg});
+  btn.textContent='📤 Send Broadcast';btn.disabled=false;
+  if(r.status==='success'){
+    toast(`✅ Sent: ${r.sent} | Failed: ${r.failed}`);
+    document.getElementById('bc-result').textContent=`✅ ${r.sent} sent, ❌ ${r.failed} failed / ${r.total} total`;
+  }else toast('❌ '+r.message,'error');
+}
+
+// BULK DELETE
+async function bulkDelete(){
+  const raw=document.getElementById('exclude-list').value.trim();
+  const exclude=raw?raw.split('\n').map(m=>m.trim()).filter(m=>m.length>=10):[];
+  if(!confirm(`Sab accounts delete honge (${exclude.length} excluded). Are you sure?`))return;
+  if(!confirm('LAST WARNING: Yeh action PERMANENT hai!'))return;
+  const r=await apiPost('/admin/bulk-delete',{exclude});
+  if(r.status==='success'){
+    toast(`🗑️ ${r.deleted} deleted, ${r.skipped} skipped`);
+    document.getElementById('bulk-result').innerHTML=`<div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:0.85rem 1rem;font-size:0.75rem;color:var(--red)">
+      ✅ Done! Deleted: <b>${r.deleted}</b> | Skipped: <b>${r.skipped}</b>
+    </div>`;
+    loadStats();
+  }else toast('❌ '+r.message,'error');
+}
+
+// LOGS
+async function loadLogs(page=1){
+  lPage=page;
+  try{
+    const r=await fetch(`${API}/admin/logs?key=${KEY}&page=${page}&limit=50`);
+    const d=await r.json();
+    if(d.status==='success'){
+      document.getElementById('logs-count').textContent=`Total: ${d.total}`;
+      const colors={ADD_BALANCE:'green',DEDUCT_BALANCE:'red',DELETE_ACCOUNT:'red',BULK_DELETE:'red',APPROVE_WITHDRAW:'green',REJECT_WITHDRAW:'red',APPROVE_DEPOSIT:'green',REJECT_DEPOSIT:'red',BROADCAST:'info',CREATE_GIFT:'gold'};
+      document.getElementById('logs-table').innerHTML=d.logs.map(l=>`
+        <tr>
+          <td><span class="tag ${colors[l.action]||'info'}">${l.action}</span></td>
+          <td class="mono">${l.target||'—'}</td>
+          <td style="font-size:0.62rem;max-width:200px">${l.detail||'—'}</td>
+          <td style="font-family:monospace;color:var(--green)">${l.amount>0?'₹'+l.amount:'—'}</td>
+          <td style="font-size:0.6rem">${fmt(l.at)}</td>
+        </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--muted)">No logs yet</td></tr>';
+      pg('logs-pg',page,Math.ceil(d.total/50),loadLogs);
+    }
+  }catch(e){}
+}
+</script>
+</body>
+</html>
