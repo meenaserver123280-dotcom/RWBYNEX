@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--gold2:#e8c97a;--gold3:#f5e6c0;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;background:var(--black);color:var(--text);position:relative;overflow-x:hidden}
+
+.bg-radial{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(201,168,76,0.08) 0%,transparent 60%),var(--black)}
+
+.brand{text-align:center;margin-bottom:1.8rem;position:relative;z-index:1}
+.crown{font-size:2.5rem;margin-bottom:0.5rem;filter:drop-shadow(0 0 16px rgba(201,168,76,0.5))}
+.brand-name{font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;color:var(--gold);letter-spacing:0.04em;text-shadow:0 0 30px rgba(201,168,76,0.3)}
+.brand-tag{font-size:0.55rem;font-weight:700;color:var(--muted);letter-spacing:0.3em;text-transform:uppercase;margin-top:6px}
+
+.card{background:var(--black2);border:1px solid #2a2200;border-radius:24px;padding:1.8rem 1.5rem;width:100%;max-width:420px;position:relative;z-index:1;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent)}
+
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--black3);border:1px solid #2a2200;border-radius:14px;padding:4px;margin-bottom:1.5rem;gap:4px}
+.tab{padding:0.65rem;text-align:center;font-weight:700;font-size:0.72rem;border-radius:10px;cursor:pointer;transition:all 0.25s;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;border:1px solid transparent}
+.tab.active{background:var(--black);color:var(--gold);border-color:#2a2200}
+
+.form{display:none}
+.form.active{display:block}
+
+.inp-grp{margin-bottom:0.9rem}
+.inp-grp label{display:block;font-size:0.55rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.16em;margin-bottom:0.4rem}
+.inp{width:100%;padding:0.88rem 1rem;background:var(--black3);border:1.5px solid #2a2200;border-radius:13px;font-size:0.88rem;font-weight:500;outline:none;transition:all 0.2s;font-family:'DM Sans',sans-serif;color:var(--text)}
+.inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.08)}
+.inp::placeholder{color:var(--muted);font-weight:400}
+
+.pass-wrap{position:relative}
+.pass-wrap .inp{padding-right:2.8rem}
+.eye{position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);color:var(--muted);cursor:pointer;font-size:0.85rem;background:none;border:none;padding:0.2rem}
+.eye:hover{color:var(--gold)}
+
+.btn{width:100%;padding:0.92rem;background:linear-gradient(135deg,var(--gold),#a07830,var(--gold));color:#000;border:none;border-radius:13px;font-size:0.82rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;margin-top:0.3rem;display:flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 6px 20px rgba(201,168,76,0.25)}
+.btn:active{transform:scale(0.97)}
+.btn.loading .btn-text{display:none}
+.btn.loading .spinner{display:inline-block}
+.spinner{display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.msg{padding:0.7rem 1rem;border-radius:12px;font-size:0.78rem;font-weight:600;margin-bottom:1rem;display:none;text-align:center}
+.msg.error{display:block;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
+.msg.success{display:block;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--green)}
+
+.divider{display:flex;align-items:center;gap:0.75rem;margin:1rem 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#2a2200}
+.divider span{font-size:0.55rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em}
+
+.tg-row{display:grid;grid-template-columns:1fr auto;gap:0.6rem;align-items:flex-end}
+.get-id-btn{display:flex;align-items:center;gap:0.4rem;padding:0.88rem 0.85rem;background:rgba(201,168,76,0.08);border:1.5px solid rgba(201,168,76,0.2);border-radius:13px;color:var(--gold);font-size:0.68rem;font-weight:700;text-decoration:none;white-space:nowrap;margin-bottom:0.9rem;transition:all 0.15s}
+.get-id-btn:active{background:rgba(201,168,76,0.15)}
+
+.bot-box{display:flex;align-items:center;gap:0.85rem;padding:0.85rem 1rem;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:14px;text-decoration:none;margin-bottom:0.9rem}
+.bot-name{font-size:0.72rem;font-weight:700;color:var(--text)}
+.bot-tag{font-size:0.6rem;color:var(--gold);margin-top:2px}
+
+.otp-banner{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:12px;padding:0.65rem 1rem;font-size:0.72rem;color:var(--green);font-weight:700;margin-bottom:0.9rem;display:none;align-items:center;gap:0.5rem}
+.otp-banner.show{display:flex}
+
+.otp-row{display:grid;grid-template-columns:1fr auto;gap:0.6rem;align-items:flex-end}
+.send-otp-btn{padding:0.88rem 0.85rem;background:linear-gradient(135deg,var(--gold),#a07830);border:none;border-radius:13px;color:#000;font-size:0.68rem;font-weight:800;cursor:pointer;white-space:nowrap;margin-bottom:0.9rem;font-family:'DM Sans',sans-serif}
+.send-otp-btn:disabled{opacity:0.5}
+
+.terms-check{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.9rem}
+.terms-check input{accent-color:var(--gold);width:16px;height:16px}
+.terms-check label{font-size:0.68rem;color:var(--text2)}
+.terms-check a{color:var(--gold);text-decoration:none}
+
+.forgot-wrap{text-align:center;margin-top:0.9rem}
+.forgot-link{font-size:0.68rem;color:var(--gold);text-decoration:none;font-weight:600}
+
+.footer{margin-top:1.4rem;font-size:0.58rem;color:var(--muted);text-align:center;position:relative;z-index:1}
+</style>
+</head>
+<body>
+<div class="bg-radial"></div>
+
+<div class="brand">
+  <div class="crown">👑</div>
+  <div class="brand-name">ROYAL WALLET</div>
+  <div class="brand-tag">Secure · Premium · Fast</div>
+</div>
+
+<div class="card">
+  <div class="tabs">
+    <div class="tab active" id="tab-login" onclick="switchTab('login')">Login</div>
+    <div class="tab" id="tab-register" onclick="switchTab('register')">Register</div>
+  </div>
+  <div id="msg" class="msg"></div>
+
+  <!-- LOGIN -->
+  <div id="login-form" class="form active">
+    <div class="inp-grp">
+      <label>Mobile Number</label>
+      <input type="number" class="inp" id="l-mobile" placeholder="Enter mobile number">
+    </div>
+    <div class="inp-grp">
+      <label>Password</label>
+      <div class="pass-wrap">
+        <input type="password" class="inp" id="l-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')login()">
+        <button class="eye" onclick="togglePass('l-pass',this)"><i class="fa-regular fa-eye"></i></button>
+      </div>
+    </div>
+    <button class="btn" id="login-btn" onclick="login()">
+      <span class="spinner"></span>
+      <span class="btn-text"><i class="fa-solid fa-right-to-bracket"></i> Login</span>
+    </button>
+    <div class="forgot-wrap"><a href="forgot.html" class="forgot-link">Forgot Password? 🔑</a></div>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="register-form" class="form">
+    <div class="inp-grp">
+      <label>Full Name</label>
+      <input type="text" class="inp" id="r-name" placeholder="Enter your name">
+    </div>
+    <div class="inp-grp">
+      <label>Mobile Number</label>
+      <input type="number" class="inp" id="r-mobile" placeholder="Enter mobile number">
+    </div>
+    <div class="inp-grp">
+      <label>Password</label>
+      <div class="pass-wrap">
+        <input type="password" class="inp" id="r-pass" placeholder="Create password">
+        <button class="eye" onclick="togglePass('r-pass',this)"><i class="fa-regular fa-eye"></i></button>
+      </div>
+    </div>
+    <div class="divider"><span>Telegram Verification</span></div>
+    <div class="tg-row">
+      <div class="inp-grp" style="margin:0">
+        <label>Telegram ID</label>
+        <input type="number" class="inp" id="r-tgid" placeholder="Your Telegram ID">
+      </div>
+      <a href="https://t.me/OTP_ROYAL_BOT?start=getid" target="_blank" class="get-id-btn"><i class="fa-solid fa-id-badge"></i> Get ID</a>
+    </div>
+    <a href="https://t.me/OTP_ROYAL_BOT?start=start" target="_blank" class="bot-box">
+      <i class="fa-brands fa-telegram" style="font-size:1.4rem;color:var(--gold)"></i>
+      <div><div class="bot-name">Start bot to receive OTP</div><div class="bot-tag">@OTP_ROYAL_BOT</div></div>
+    </a>
+    <div class="otp-banner" id="otp-banner"><i class="fa-solid fa-circle-check"></i> OTP sent! Check Telegram</div>
+    <div class="otp-row">
+      <div class="inp-grp" style="margin:0">
+        <label>Enter OTP</label>
+        <input type="number" class="inp" id="r-otp" placeholder="4-digit OTP">
+      </div>
+      <button class="send-otp-btn" id="otp-btn" onclick="sendOTP()"><i class="fa-solid fa-paper-plane"></i> Send OTP</button>
+    </div>
+    <div class="terms-check">
+      <input type="checkbox" id="terms">
+      <label for="terms">I agree to <a href="terms.html">Terms & Conditions</a></label>
+    </div>
+    <button class="btn" id="reg-btn" onclick="register()">
+      <span class="spinner"></span>
+      <span class="btn-text"><i class="fa-solid fa-user-plus"></i> Create Account</span>
+    </button>
+  </div>
+</div>
+
+<div class="footer">👑 Royal Wallet — Premium Digital Wallet</div>
+
+<script>
+const API = '';
+
+(function(){
+  const token = localStorage.getItem('rw_token');
+  if (token) window.location.href = 'pin.html';
+})();
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.form').forEach(f=>f.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById(tab+'-form').classList.add('active');
+  document.getElementById('msg').className='msg';
+}
+function showMsg(t,type){const m=document.getElementById('msg');m.textContent=t;m.className='msg '+type;}
+function btnLoad(id,on){const b=document.getElementById(id);b.classList.toggle('loading',on);b.disabled=on;}
+function togglePass(id,btn){const i=document.getElementById(id);const h=i.type==='password';i.type=h?'text':'password';btn.innerHTML=h?'<i class="fa-regular fa-eye-slash"></i>':'<i class="fa-regular fa-eye"></i>';}
+
+async function login(){
+  const mobile=document.getElementById('l-mobile').value.trim();
+  const pass=document.getElementById('l-pass').value.trim();
+  if(!mobile||!pass)return showMsg('Mobile aur password bharo!','error');
+  btnLoad('login-btn',true);
+  try{
+    const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile,password:pass})});
+    const d=await r.json();
+    if(d.status!=='success'){showMsg(d.message||'Login failed','error');return;}
+    localStorage.setItem('rw_token',d.token);
+    localStorage.setItem('rw_user',JSON.stringify(d.user));
+    localStorage.setItem('rw_pin_set',d.user.pin_set?'true':'false');
+    window.location.href='pin.html';
+  }catch(e){showMsg('Network error','error');}
+  finally{btnLoad('login-btn',false);}
+}
+
+async function sendOTP(){
+  const tg_id=document.getElementById('r-tgid').value.trim();
+  if(!tg_id)return showMsg('Telegram ID enter karo!','error');
+  const btn=document.getElementById('otp-btn');
+  btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>';
+  try{
+    const r=await fetch(API+'/auth/send-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tg_id})});
+    const d=await r.json();
+    if(d.status==='success'){document.getElementById('otp-banner').classList.add('show');btn.innerHTML='✓ Sent';}
+    else{showMsg(d.message||'OTP failed','error');btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Send OTP';}
+  }catch(e){showMsg('Network error','error');btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Send OTP';}
+}
+
+async function register(){
+  const name=document.getElementById('r-name').value.trim();
+  const mobile=document.getElementById('r-mobile').value.trim();
+  const pass=document.getElementById('r-pass').value.trim();
+  const tg_id=document.getElementById('r-tgid').value.trim();
+  const otp=document.getElementById('r-otp').value.trim();
+  const cb=document.getElementById('terms').checked;
+  if(!name||!mobile||!pass||!tg_id||!otp)return showMsg('Sari details bharo!','error');
+  if(!cb)return showMsg('Terms accept karo','error');
+  btnLoad('reg-btn',true);
+  try{
+    const r=await fetch(API+'/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,mobile,password:pass,tg_id,otp,pin:'0000'})});
+    const d=await r.json();
+    if(d.status!=='success'){showMsg(d.message||'Registration failed','error');return;}
+    localStorage.setItem('rw_token',d.token);
+    localStorage.setItem('rw_user',JSON.stringify(d.user));
+    localStorage.setItem('rw_pin_set','false');
+    window.location.href='pin.html';
+  }catch(e){showMsg('Network error','error');}
+  finally{btnLoad('reg-btn',false);}
+}
+</script>
+</body>
+</html>
