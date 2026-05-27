@@ -4,7 +4,8 @@ const User    = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'royalwallet_secret_2026';
 const BOT_TOKEN  = process.env.BOT_TOKEN  || '8628927921:AAFwhTSTJ5tNGNuy9gYY3_jpb6vb0rAJZtU';
-const ADMIN_TG   = process.env.ADMIN_TG_ID || '';
+// Updated Admin Telegram ID to prevent timeouts/errors
+const ADMIN_TG   = process.env.ADMIN_TG_ID || '8385527440'; 
 
 const otpStore    = {};
 const pinOtpStore = {};
@@ -14,14 +15,25 @@ const getIST = () => new Date().toLocaleString('en-IN', {
   year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true
 });
 
+// Fixed: Added AbortController timeout to prevent fetch from hanging your server execution
 async function sendTG(chat_id, text) {
   if (!chat_id || !BOT_TOKEN) return;
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 seconds timeout limit
+
   try {
     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ chat_id, text, parse_mode:'HTML' })
+      method:'POST', 
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id, text, parse_mode:'HTML' }),
+      signal: controller.signal
     });
-  } catch(e) {}
+  } catch(e) {
+    console.error("Telegram Error or Timeout:", e.message);
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function auth(req, res, next) {
@@ -42,6 +54,7 @@ router.post('/send-otp', async (req, res) => {
     if (existing) return res.status(400).json({ status:'error', message:'Ye Telegram ID pehle se registered hai!' });
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
     otpStore[tg_id] = { otp, expires: Date.now() + 5 * 60 * 1000 };
+    
     await sendTG(tg_id,
       `👑 <b>Welcome to Royal Wallet!</b>\n\n` +
       `🔐 <b>OTP = ${otp}</b>\n\n` +
@@ -70,6 +83,7 @@ router.post('/register', async (req, res) => {
     const api_key   = 'RW-' + Math.random().toString(36).substr(2,12).toUpperCase();
     const user = await User.create({ name, mobile, password, pin:'0000', pin_set:false, tg_id, wallet_id, api_key, balance:0 });
     const token = jwt.sign({ id:user._id }, JWT_SECRET, { expiresIn:'30d' });
+    
     await sendTG(tg_id,
       `✅ <b>Account Created!</b>\n\n` +
       `👤 Name: <b>${name}</b>\n` +
@@ -77,9 +91,13 @@ router.post('/register', async (req, res) => {
       `💼 Wallet: <b>${wallet_id}</b>\n\n` +
       `👑 <b>ROYAL WALLET</b>`
     );
-    if (ADMIN_TG) sendTG(ADMIN_TG,
-      `🆕 <b>New User!</b>\n👤 ${name}\n📱 ${mobile}\n⏰ ${getIST()}\n\n👑 <b>ROYAL WALLET</b>`
-    );
+    
+    if (ADMIN_TG) {
+      await sendTG(ADMIN_TG,
+        `🆕 <b>New User!</b>\n👤 ${name}\n📱 ${mobile}\n⏰ ${getIST()}\n\n👑 <b>ROYAL WALLET</b>`
+      );
+    }
+    
     res.json({ status:'success', token, user:{ id:user._id, name:user.name, mobile:user.mobile, wallet_id:user.wallet_id, api_key:user.api_key, balance:user.balance, tg_id:user.tg_id, pin_set:false } });
   } catch(e) { res.status(500).json({ status:'error', message:e.message }); }
 });
@@ -94,9 +112,13 @@ router.post('/login', async (req, res) => {
     if (user.banned) return res.status(403).json({ status:'error', message:'Account banned. Contact support.' });
     const token = jwt.sign({ id:user._id }, JWT_SECRET, { expiresIn:'30d' });
     await User.findByIdAndUpdate(user._id, { last_login:new Date() });
-    if (user.tg_id) sendTG(user.tg_id,
-      `🔐 <b>Royal Wallet Login Alert!</b>\n\n📱 Mobile: <b>${mobile}</b>\n⏰ Time: <b>${getIST()}</b>\n\nAgar ye aap nahi hain password badlein!\n\n👑 <b>ROYAL WALLET</b>`
-    );
+    
+    if (user.tg_id) {
+      await sendTG(user.tg_id,
+        `🔐 <b>Royal Wallet Login Alert!</b>\n\n📱 Mobile: <b>${mobile}</b>\n⏰ Time: <b>${getIST()}</b>\n\nAgar ye aap nahi hain password badlein!\n\n👑 <b>ROYAL WALLET</b>`
+      );
+    }
+    
     res.json({ status:'success', token, user:{ id:user._id, name:user.name, mobile:user.mobile, wallet_id:user.wallet_id, api_key:user.api_key, balance:user.balance, tg_id:user.tg_id, pin_set:user.pin_set } });
   } catch(e) { res.status(500).json({ status:'error', message:e.message }); }
 });
@@ -138,6 +160,7 @@ router.post('/forgot-pin-otp', async (req, res) => {
     if (!user) return res.status(404).json({ message:'User not found' });
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
     pinOtpStore[tg_id] = { otp, expires: Date.now() + 5 * 60 * 1000 };
+    
     await sendTG(tg_id,
       `🔑 <b>Royal Wallet PIN Reset</b>\n\n🔢 OTP = <b>${otp}</b>\nValid 5 mins.\n\n👑 <b>ROYAL WALLET</b>`
     );
@@ -154,6 +177,7 @@ router.post('/reset-pin', async (req, res) => {
       return res.status(400).json({ message:'Invalid or Expired OTP' });
     await User.findOneAndUpdate({ tg_id }, { pin:new_pin.toString(), pin_set:true });
     delete pinOtpStore[tg_id];
+    
     await sendTG(tg_id, `✅ <b>PIN Reset!</b>\n\nTime: ${getIST()}\n\n👑 <b>ROYAL WALLET</b>`);
     res.json({ status:'success', message:'PIN reset' });
   } catch(e) { res.status(500).json({ message:e.message }); }
@@ -171,9 +195,12 @@ router.post('/check-mobile', async (req, res) => {
 
 // Regen API Key
 router.post('/regen-key', auth, async (req, res) => {
-  const api_key = 'RW-' + Math.random().toString(36).substr(2,12).toUpperCase();
-  await User.findByIdAndUpdate(req.user.id, { api_key });
-  res.json({ status:'success', api_key });
+  try {
+    const api_key = 'RW-' + Math.random().toString(36).substr(2,12).toUpperCase();
+    await User.findByIdAndUpdate(req.user.id, { api_key });
+    res.json({ status:'success', api_key });
+  } catch(e) { res.status(500).json({ status:'error', message:e.message }); }
 });
 
 module.exports = { router, auth };
+    
