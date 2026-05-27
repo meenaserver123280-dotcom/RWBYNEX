@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIN | Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--gold:#c9a84c;--gold2:#e8c97a;--black:#080808;--black2:#111;--black3:#1a1a1a;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;background:var(--black);color:var(--text)}
+.bg-radial{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(201,168,76,0.06) 0%,transparent 60%),var(--black)}
+.brand{text-align:center;margin-bottom:2rem;z-index:1;position:relative}
+.crown{font-size:2rem;filter:drop-shadow(0 0 12px rgba(201,168,76,0.4))}
+.brand-name{font-size:1.2rem;font-weight:800;color:var(--gold);margin-top:0.4rem}
+.card{background:var(--black2);border:1px solid #2a2200;border-radius:24px;padding:2rem 1.5rem;width:100%;max-width:360px;z-index:1;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.pin-title{font-size:1rem;font-weight:800;text-align:center;color:var(--text)}
+.pin-sub{font-size:0.68rem;color:var(--text2);text-align:center;margin:0.3rem 0 1.8rem}
+.pin-dots{display:flex;justify-content:center;gap:0.85rem;margin-bottom:1.8rem}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid #2a2200;transition:all 0.2s}
+.dot.filled{background:var(--gold);border-color:var(--gold);box-shadow:0 0 10px rgba(201,168,76,0.4)}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:1rem}
+.key{padding:1rem;background:var(--black3);border:1px solid #2a2200;border-radius:14px;font-size:1.1rem;font-weight:700;cursor:pointer;text-align:center;color:var(--text);transition:all 0.15s;font-family:'DM Sans',sans-serif}
+.key:active{background:#2a2200;transform:scale(0.93)}
+.key.del{color:var(--red)}
+.key.empty{background:transparent;border-color:transparent;cursor:default}
+.msg{padding:0.7rem 1rem;border-radius:12px;font-size:0.78rem;font-weight:600;margin-bottom:1rem;display:none;text-align:center}
+.msg.error{display:block;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
+.hint{text-align:center;font-size:0.62rem;color:var(--muted);margin-top:0.5rem}
+.hint a{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="bg-radial"></div>
+<div class="brand">
+  <div class="crown">👑</div>
+  <div class="brand-name">ROYAL WALLET</div>
+</div>
+<div class="card">
+  <div id="msg" class="msg"></div>
+  <div class="pin-title" id="pin-title">Enter PIN</div>
+  <div class="pin-sub" id="pin-sub">Enter your 4-digit security PIN</div>
+  <div class="pin-dots">
+    <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
+  </div>
+  <div class="keypad">
+    <button class="key" onclick="press(1)">1</button>
+    <button class="key" onclick="press(2)">2</button>
+    <button class="key" onclick="press(3)">3</button>
+    <button class="key" onclick="press(4)">4</button>
+    <button class="key" onclick="press(5)">5</button>
+    <button class="key" onclick="press(6)">6</button>
+    <button class="key" onclick="press(7)">7</button>
+    <button class="key" onclick="press(8)">8</button>
+    <button class="key" onclick="press(9)">9</button>
+    <button class="key empty"></button>
+    <button class="key" onclick="press(0)">0</button>
+    <button class="key del" onclick="del()"><i class="fa-solid fa-delete-left"></i></button>
+  </div>
+  <div class="hint" id="hint"><a href="forgot.html">Forgot PIN?</a></div>
+</div>
+<script>
+const API    = '';
+const token  = localStorage.getItem('rw_token');
+const pinSet = localStorage.getItem('rw_pin_set')==='true';
+if (!token) window.location.href='index.html';
+
+let pin='', confirmPin='', step=pinSet?'verify':'set';
+document.getElementById('pin-title').textContent = pinSet?'Enter PIN':'Set PIN';
+document.getElementById('pin-sub').textContent   = pinSet?'Enter your 4-digit security PIN':'Create a 4-digit security PIN';
+if (!pinSet) document.getElementById('hint').style.display='none';
+
+function updateDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('filled',i<pin.length);}
+function showMsg(t,type){const m=document.getElementById('msg');m.textContent=t;m.className='msg '+type;}
+
+function press(n){
+  if(pin.length>=4)return;
+  pin+=n.toString(); updateDots();
+  if(pin.length===4)setTimeout(submit,150);
+}
+function del(){pin=pin.slice(0,-1);updateDots();}
+
+async function submit(){
+  if(step==='verify'){
+    try{
+      const r=await fetch(API+'/auth/verify-pin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({pin})});
+      const d=await r.json();
+      if(d.status==='success') window.location.href='dashboard.html';
+      else{showMsg('Wrong PIN!','error');pin='';updateDots();}
+    }catch(e){showMsg('Network error','error');pin='';updateDots();}
+  } else if(step==='set'){
+    confirmPin=pin;pin='';step='confirm';
+    document.getElementById('pin-title').textContent='Confirm PIN';
+    document.getElementById('pin-sub').textContent='Enter PIN again';
+    updateDots();
+  } else {
+    if(pin!==confirmPin){
+      showMsg('PINs do not match!','error');
+      pin='';confirmPin='';step='set';
+      document.getElementById('pin-title').textContent='Set PIN';
+      document.getElementById('pin-sub').textContent='Create a 4-digit security PIN';
+      updateDots();return;
+    }
+    try{
+      const r=await fetch(API+'/auth/set-pin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({pin})});
+      const d=await r.json();
+      if(d.status==='success'){localStorage.setItem('rw_pin_set','true');window.location.href='dashboard.html';}
+      else{showMsg(d.message||'Error','error');pin='';updateDots();}
+    }catch(e){showMsg('Network error','error');pin='';updateDots();}
+  }
+}
+</script>
+</body>
+</html>
