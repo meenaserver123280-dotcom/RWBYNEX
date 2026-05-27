@@ -6,7 +6,7 @@ const GiftCode    = require('../models/GiftCode');
 
 const BOT_TOKEN  = process.env.BOT_TOKEN   || '';
 const ADMIN_TG   = process.env.ADMIN_TG_ID || '';
-const ADMIN_PASS = process.env.ADMIN_SECRET || '';
+const ADMIN_PASS = process.env.ADMIN_SECRET || '9955';
 
 const getIST = () => new Date().toLocaleString('en-IN', {
   timeZone:'Asia/Kolkata', hour12:true,
