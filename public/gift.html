@@ -7,26 +7,41 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-:root{--gold:#c9a84c;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444}
+:root{--gold:#c9a84c;--gold2:#e8c97a;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--text2:#a89060;--muted:#5a4a2a;--green:#10b981;--red:#ef4444;--orange:#f97316}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;padding-bottom:80px}
 .header{background:rgba(8,8,8,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0.85rem 1.1rem;display:flex;align-items:center;gap:0.8rem;position:sticky;top:0;z-index:100}
 .back-btn{width:36px;height:36px;background:var(--black3);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;font-size:0.85rem;flex-shrink:0}
 .h-title{font-size:1rem;font-weight:800}.h-title span{color:var(--gold)}
 .wrap{max-width:480px;margin:0 auto;padding:1rem}
-.gift-hero{text-align:center;padding:2rem 1rem 1.5rem;background:linear-gradient(145deg,#1a1500,#0d0d00);border:1px solid var(--border);border-radius:20px;margin-bottom:0.9rem;position:relative;overflow:hidden}
-.gift-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.gift-icon{font-size:3rem;margin-bottom:0.6rem;filter:drop-shadow(0 0 16px rgba(201,168,76,0.4))}
-.gift-title{font-size:1.1rem;font-weight:800;color:var(--gold);margin-bottom:0.3rem}
-.gift-sub{font-size:0.68rem;color:var(--muted)}
-.card{background:var(--black2);border:1px solid var(--border);border-radius:20px;padding:1.3rem;margin-bottom:0.9rem;position:relative;overflow:hidden}
+
+/* TABS */
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--black3);border:1px solid var(--border);border-radius:14px;padding:4px;gap:4px;margin-bottom:1rem}
+.seg-btn{padding:0.65rem;text-align:center;font-weight:700;font-size:0.7rem;border-radius:10px;cursor:pointer;transition:all 0.2s;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;border:none;background:none}
+.seg-btn.active{background:var(--black);color:var(--gold);border:1px solid var(--border)}
+
+/* BAL BOX */
+.bal-box{background:linear-gradient(145deg,#1a1500,#0d0d00);border:1px solid var(--border);border-radius:14px;padding:0.85rem 1.1rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem}
+.bal-lbl{font-size:0.5rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.2rem}
+.bal-val{font-size:1.2rem;font-weight:800;color:var(--gold)}
+
+.card{background:var(--black2);border:1px solid var(--border);border-radius:20px;padding:1.3rem;margin-bottom:0.9rem;position:relative;overflow:hidden;display:none}
+.card.active{display:block}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 .c-title{font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:1rem}
+
 .inp-grp{margin-bottom:0.85rem}
 .inp-grp label{display:block;font-size:0.52rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.16em;margin-bottom:0.4rem}
-.code-inp{width:100%;padding:1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;font-size:1.1rem;font-weight:700;outline:none;transition:all 0.2s;font-family:monospace;color:var(--gold);text-align:center;letter-spacing:0.1em;text-transform:uppercase}
-.code-inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.08)}
-.code-inp::placeholder{color:var(--muted);font-size:0.88rem;font-weight:400;letter-spacing:0.02em;font-family:'DM Sans',sans-serif;text-transform:none}
+.inp{width:100%;padding:0.85rem 1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;font-size:0.88rem;font-weight:500;outline:none;transition:all 0.2s;font-family:'DM Sans',sans-serif;color:var(--text)}
+.inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.08)}
+.inp::placeholder{color:var(--muted);font-weight:400}
+
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
+
+.cost-box{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:13px;padding:0.85rem 1rem;margin-bottom:0.85rem;display:flex;justify-content:space-between;align-items:center}
+.cost-lbl{font-size:0.62rem;color:var(--muted)}
+.cost-val{font-size:1rem;font-weight:800;color:var(--gold)}
+
 .btn{width:100%;padding:0.92rem;background:linear-gradient(135deg,var(--gold),#a07830,var(--gold));color:#000;border:none;border-radius:13px;font-size:0.82rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;font-family:'DM Sans',sans-serif;transition:all 0.2s;box-shadow:0 6px 20px rgba(201,168,76,0.2)}
 .btn:active{transform:scale(0.97)}
 .btn:disabled{opacity:0.5}
@@ -34,9 +49,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
 .btn.loading .spinner{display:inline-block}
 .spinner{display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
 .msg{padding:0.7rem 1rem;border-radius:12px;font-size:0.78rem;font-weight:600;margin-bottom:0.85rem;display:none;text-align:center}
 .msg.error{display:block;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
 .msg.success{display:block;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--green)}
+
+.code-inp{width:100%;padding:1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;font-size:1.1rem;font-weight:700;outline:none;font-family:monospace;color:var(--gold);text-align:center;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.85rem}
+.code-inp:focus{border-color:var(--gold)}
+.code-inp::placeholder{color:var(--muted);font-size:0.85rem;font-weight:400;letter-spacing:0.02em;font-family:'DM Sans',sans-serif;text-transform:none}
+
+/* MY CODES */
+.my-code-item{background:var(--black3);border:1px solid var(--border);border-radius:14px;padding:0.9rem 1rem;margin-bottom:0.6rem}
+.mc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem}
+.mc-code{font-family:monospace;font-size:0.88rem;font-weight:800;color:var(--gold)}
+.mc-status{font-size:0.52rem;font-weight:800;padding:2px 8px;border-radius:100px}
+.mc-status.active{background:rgba(16,185,129,0.12);color:var(--green)}
+.mc-status.expired{background:rgba(239,68,68,0.12);color:var(--red)}
+.mc-info{display:flex;gap:0.75rem;font-size:0.62rem;color:var(--muted)}
+.mc-info span{display:flex;align-items:center;gap:3px}
+.copy-code{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:3px 8px;color:var(--gold);font-size:0.58rem;font-weight:700;cursor:pointer;margin-left:auto}
+
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--muted)}
+.empty-state i{font-size:2rem;display:block;margin-bottom:0.6rem;opacity:0.15}
+.empty-state p{font-size:0.72rem;font-weight:600}
+
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:0.48rem;font-weight:800;text-transform:uppercase;cursor:pointer;text-decoration:none;flex:1;transition:color 0.18s;padding-top:4px;position:relative}
 .nav-item.active{color:var(--gold)}
@@ -46,29 +82,77 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
 </style>
 </head>
 <body>
+
 <div class="header">
   <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
   <div class="h-title">Gift <span>Code</span></div>
 </div>
+
 <div class="wrap">
-  <div class="gift-hero">
-    <div class="gift-icon">🎁</div>
-    <div class="gift-title">Redeem Gift Code</div>
-    <div class="gift-sub">Enter your gift code to add balance instantly</div>
+
+  <div class="bal-box">
+    <div><div class="bal-lbl">Available Balance</div><div class="bal-val">₹<span id="bal">0.00</span></div></div>
+    <i class="fa-solid fa-crown" style="font-size:1.3rem;color:rgba(201,168,76,0.3)"></i>
   </div>
-  <div id="msg" class="msg"></div>
-  <div class="card">
-    <div class="c-title">Enter Code</div>
-    <div class="inp-grp">
-      <label>Gift Code</label>
-      <input class="code-inp" type="text" id="code" placeholder="Enter gift code..." maxlength="20">
-    </div>
+
+  <div class="seg">
+    <button class="seg-btn active" id="tab-redeem" onclick="switchTab('redeem')">🎁 Redeem</button>
+    <button class="seg-btn" id="tab-create" onclick="switchTab('create')">✨ Create</button>
+  </div>
+
+  <!-- REDEEM -->
+  <div class="card active" id="card-redeem">
+    <div class="c-title">Redeem Gift Code</div>
+    <div id="msg-redeem" class="msg"></div>
+    <input class="code-inp" type="text" id="redeem-code" placeholder="Enter gift code..." maxlength="20">
     <button class="btn" id="redeem-btn" onclick="redeem()">
       <span class="spinner"></span>
       <span class="btn-text"><i class="fa-solid fa-gift"></i> Redeem Code</span>
     </button>
   </div>
+
+  <!-- CREATE -->
+  <div class="card" id="card-create">
+    <div class="c-title">Create Gift Code</div>
+    <div id="msg-create" class="msg"></div>
+    <div class="inp-grp">
+      <label>Gift Code Name</label>
+      <input class="inp" type="text" id="gc-code" placeholder="e.g. ROYAL100" maxlength="20" oninput="this.value=this.value.toUpperCase();calcCost()">
+    </div>
+    <div class="inp-row">
+      <div class="inp-grp">
+        <label>Amount per Use (₹)</label>
+        <input class="inp" type="number" id="gc-amt" placeholder="₹10" oninput="calcCost()">
+      </div>
+      <div class="inp-grp">
+        <label>Max Uses</label>
+        <input class="inp" type="number" id="gc-uses" placeholder="1" oninput="calcCost()">
+      </div>
+    </div>
+    <div class="inp-grp">
+      <label>Expires in Hours (Optional)</label>
+      <input class="inp" type="number" id="gc-exp" placeholder="e.g. 24 hours">
+    </div>
+    <div class="cost-box">
+      <div class="cost-lbl">Total Cost from Balance</div>
+      <div class="cost-val">₹<span id="total-cost">0.00</span></div>
+    </div>
+    <button class="btn" id="create-btn" onclick="createCode()">
+      <span class="spinner"></span>
+      <span class="btn-text"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Gift Code</span>
+    </button>
+  </div>
+
+  <!-- MY CODES -->
+  <div class="card active" id="card-mycodes" style="display:none">
+    <div class="c-title">My Created Codes</div>
+    <div id="mycodes-list">
+      <div class="empty-state"><i class="fa-solid fa-gift"></i><p>Koi code nahi banaya abhi tak</p></div>
+    </div>
+  </div>
+
 </div>
+
 <div class="bottom-nav">
   <a href="dashboard.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-house"></i>Home</a>
   <a href="transfer.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-paper-plane"></i>Send</a>
@@ -76,23 +160,119 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
   <a href="transactions.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-receipt"></i>History</a>
   <a href="settings.html" class="nav-item"><div class="nav-pip"></div><i class="fa-solid fa-key"></i>API</a>
 </div>
+
 <script>
-const API='';const token=localStorage.getItem('rw_token');
-if(!token)window.location.href='index.html';
-function showMsg(t,type){const m=document.getElementById('msg');m.textContent=t;m.className='msg '+type;}
-document.getElementById('code').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+const API   = '';
+const token = localStorage.getItem('rw_token');
+const user  = JSON.parse(localStorage.getItem('rw_user')||'{}');
+if (!token) window.location.href='index.html';
+
+document.getElementById('redeem-code').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+
+async function loadBal(){
+  try{
+    const r=await fetch(API+'/wallet/balance',{headers:{'Authorization':'Bearer '+token}});
+    const d=await r.json();
+    if(d.status==='success') document.getElementById('bal').textContent=parseFloat(d.balance).toFixed(2);
+  }catch(e){}
+}
+loadBal();
+
+function switchTab(tab){
+  document.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('card-redeem').style.display = tab==='redeem'?'block':'none';
+  document.getElementById('card-create').style.display = tab==='create'?'block':'none';
+  document.getElementById('card-mycodes').style.display = tab==='create'?'block':'none';
+  if(tab==='create') loadMyCodes();
+}
+
+function calcCost(){
+  const amt  = parseFloat(document.getElementById('gc-amt').value)||0;
+  const uses = parseInt(document.getElementById('gc-uses').value)||1;
+  document.getElementById('total-cost').textContent=(amt*uses).toFixed(2);
+}
+
+function showMsg(id,t,type){const m=document.getElementById(id);m.textContent=t;m.className='msg '+type;}
+
+// REDEEM
 async function redeem(){
-  const code=document.getElementById('code').value.trim();
-  if(!code)return showMsg('Gift code enter karo!','error');
+  const code=document.getElementById('redeem-code').value.trim();
+  if(!code)return showMsg('msg-redeem','Gift code enter karo!','error');
   const btn=document.getElementById('redeem-btn');
   btn.classList.add('loading');btn.disabled=true;
   try{
     const r=await fetch(API+'/gift/redeem',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({code})});
     const d=await r.json();
-    if(d.status==='success'){showMsg(`🎉 ₹${d.amount} balance add ho gaya! 👑`,'success');document.getElementById('code').value='';}
-    else showMsg(d.message||'Invalid code','error');
-  }catch(e){showMsg('Network error','error');}
+    if(d.status==='success'){
+      showMsg('msg-redeem',`🎉 ₹${d.amount} balance add ho gaya! 👑`,'success');
+      document.getElementById('redeem-code').value='';
+      loadBal();
+    }else showMsg('msg-redeem',d.message||'Invalid code','error');
+  }catch(e){showMsg('msg-redeem','Network error','error');}
   btn.classList.remove('loading');btn.disabled=false;
+}
+
+// CREATE
+async function createCode(){
+  const code  = document.getElementById('gc-code').value.trim();
+  const amount= document.getElementById('gc-amt').value.trim();
+  const uses  = document.getElementById('gc-uses').value.trim()||'1';
+  const exp   = document.getElementById('gc-exp').value.trim();
+  if(!code||!amount)return showMsg('msg-create','Code aur amount required!','error');
+  if(parseFloat(amount)<1)return showMsg('msg-create','Minimum ₹1!','error');
+  const totalCost=(parseFloat(amount)*parseInt(uses)).toFixed(2);
+  if(!confirm(`₹${totalCost} balance se cut hoga. Proceed?`))return;
+  const btn=document.getElementById('create-btn');
+  btn.classList.add('loading');btn.disabled=true;
+  try{
+    const r=await fetch(API+'/gift/create',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({code,amount,max_uses:uses,expires_hours:exp||undefined})
+    });
+    const d=await r.json();
+    if(d.status==='success'){
+      showMsg('msg-create',`✅ Code "${d.code}" created! ₹${d.total_cost} deducted.`,'success');
+      document.getElementById('gc-code').value='';
+      document.getElementById('gc-amt').value='';
+      document.getElementById('gc-uses').value='';
+      document.getElementById('gc-exp').value='';
+      document.getElementById('total-cost').textContent='0.00';
+      loadBal();
+      loadMyCodes();
+    }else showMsg('msg-create',d.message||'Error','error');
+  }catch(e){showMsg('msg-create','Network error','error');}
+  btn.classList.remove('loading');btn.disabled=false;
+}
+
+// MY CODES
+async function loadMyCodes(){
+  try{
+    const r=await fetch(API+'/gift/my-codes',{headers:{'Authorization':'Bearer '+token}});
+    const d=await r.json();
+    const el=document.getElementById('mycodes-list');
+    document.getElementById('card-mycodes').style.display='block';
+    if(!d.codes?.length){
+      el.innerHTML='<div class="empty-state"><i class="fa-solid fa-gift"></i><p>Koi code nahi banaya abhi tak</p></div>';
+      return;
+    }
+    el.innerHTML=d.codes.map(c=>{
+      const isActive=c.active&&(!c.expires_at||new Date()<new Date(c.expires_at));
+      return `<div class="my-code-item">
+        <div class="mc-top">
+          <div class="mc-code">${c.code}</div>
+          <span class="mc-status ${isActive?'active':'expired'}">${isActive?'Active':'Expired/Used'}</span>
+        </div>
+        <div class="mc-info">
+          <span><i class="fa-solid fa-indian-rupee-sign"></i> ₹${c.amount}/use</span>
+          <span><i class="fa-solid fa-users"></i> ${c.used_count}/${c.max_uses} used</span>
+          ${c.expires_at?`<span><i class="fa-solid fa-clock"></i> ${new Date(c.expires_at).toLocaleDateString('en-IN')}</span>`:''}
+          <button class="copy-code" onclick="navigator.clipboard.writeText('${c.code}').then(()=>alert('Copied!'))"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){}
 }
 </script>
 </body>
