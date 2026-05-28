@@ -38,6 +38,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
 
 .inp-row{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
 
+/* Auto Code Preview Box */
+.auto-code-box{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:13px;padding:0.85rem 1rem;margin-bottom:0.85rem;display:flex;justify-content:space-between;align-items:center}
+.auto-code-lbl{font-size:0.52rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.25rem}
+.auto-code-val{font-family:monospace;font-size:1.3rem;font-weight:800;color:var(--gold);letter-spacing:0.18em}
+.regen-btn{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25);border-radius:9px;padding:6px 10px;color:var(--gold);font-size:0.62rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:'DM Sans',sans-serif}
+.regen-btn:active{transform:scale(0.95)}
+
 .cost-box{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:13px;padding:0.85rem 1rem;margin-bottom:0.85rem;display:flex;justify-content:space-between;align-items:center}
 .cost-lbl{font-size:0.62rem;color:var(--muted)}
 .cost-val{font-size:1rem;font-weight:800;color:var(--gold)}
@@ -54,18 +61,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
 .msg.error{display:block;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
 .msg.success{display:block;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--green)}
 
-.code-inp{width:100%;padding:1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;font-size:1.1rem;font-weight:700;outline:none;font-family:monospace;color:var(--gold);text-align:center;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.85rem}
+/* Redeem code input */
+.code-inp{width:100%;padding:1rem;background:var(--black3);border:1.5px solid var(--border);border-radius:13px;font-size:1.4rem;font-weight:700;outline:none;font-family:monospace;color:var(--gold);text-align:center;letter-spacing:0.25em;margin-bottom:0.85rem}
 .code-inp:focus{border-color:var(--gold)}
 .code-inp::placeholder{color:var(--muted);font-size:0.85rem;font-weight:400;letter-spacing:0.02em;font-family:'DM Sans',sans-serif;text-transform:none}
+
+/* Remark display after redeem */
+.remark-tag{display:inline-block;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:3px 10px;font-size:0.68rem;color:var(--text2);margin-top:4px}
 
 /* MY CODES */
 .my-code-item{background:var(--black3);border:1px solid var(--border);border-radius:14px;padding:0.9rem 1rem;margin-bottom:0.6rem}
 .mc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem}
-.mc-code{font-family:monospace;font-size:0.88rem;font-weight:800;color:var(--gold)}
+.mc-code{font-family:monospace;font-size:1rem;font-weight:800;color:var(--gold);letter-spacing:0.18em}
 .mc-status{font-size:0.52rem;font-weight:800;padding:2px 8px;border-radius:100px}
 .mc-status.active{background:rgba(16,185,129,0.12);color:var(--green)}
 .mc-status.expired{background:rgba(239,68,68,0.12);color:var(--red)}
-.mc-info{display:flex;gap:0.75rem;font-size:0.62rem;color:var(--muted)}
+.mc-remark{font-size:0.65rem;color:var(--text2);margin-bottom:0.4rem;display:flex;align-items:center;gap:4px}
+.mc-info{display:flex;gap:0.75rem;font-size:0.62rem;color:var(--muted);flex-wrap:wrap}
 .mc-info span{display:flex;align-items:center;gap:3px}
 .copy-code{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:3px 8px;color:var(--gold);font-size:0.58rem;font-weight:700;cursor:pointer;margin-left:auto}
 
@@ -104,7 +116,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
   <div class="card active" id="card-redeem">
     <div class="c-title">Redeem Gift Code</div>
     <div id="msg-redeem" class="msg"></div>
-    <input class="code-inp" type="text" id="redeem-code" placeholder="Enter gift code..." maxlength="20">
+    <input class="code-inp" type="number" id="redeem-code" placeholder="5-digit code..." maxlength="5" inputmode="numeric">
     <button class="btn" id="redeem-btn" onclick="redeem()">
       <span class="spinner"></span>
       <span class="btn-text"><i class="fa-solid fa-gift"></i> Redeem Code</span>
@@ -115,10 +127,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
   <div class="card" id="card-create">
     <div class="c-title">Create Gift Code</div>
     <div id="msg-create" class="msg"></div>
-    <div class="inp-grp">
-      <label>Gift Code Name</label>
-      <input class="inp" type="text" id="gc-code" placeholder="e.g. ROYAL100" maxlength="20" oninput="this.value=this.value.toUpperCase();calcCost()">
+
+    <!-- Auto-generated code preview -->
+    <div class="auto-code-box">
+      <div>
+        <div class="auto-code-lbl">Auto Generated Code</div>
+        <div class="auto-code-val" id="preview-code">—</div>
+      </div>
+      <button class="regen-btn" onclick="genCode()"><i class="fa-solid fa-rotate-right"></i> New</button>
     </div>
+
     <div class="inp-row">
       <div class="inp-grp">
         <label>Amount per Use (₹)</label>
@@ -133,6 +151,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
       <label>Expires in Hours (Optional)</label>
       <input class="inp" type="number" id="gc-exp" placeholder="e.g. 24 hours">
     </div>
+    <div class="inp-grp">
+      <label>Remark (Optional)</label>
+      <input class="inp" type="text" id="gc-remark" placeholder="e.g. Birthday gift, Diwali bonus..." maxlength="60">
+    </div>
     <div class="cost-box">
       <div class="cost-lbl">Total Cost from Balance</div>
       <div class="cost-val">₹<span id="total-cost">0.00</span></div>
@@ -144,7 +166,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
   </div>
 
   <!-- MY CODES -->
-  <div class="card active" id="card-mycodes" style="display:none">
+  <div class="card" id="card-mycodes">
     <div class="c-title">My Created Codes</div>
     <div id="mycodes-list">
       <div class="empty-state"><i class="fa-solid fa-gift"></i><p>Koi code nahi banaya abhi tak</p></div>
@@ -167,8 +189,15 @@ const token = localStorage.getItem('rw_token');
 const user  = JSON.parse(localStorage.getItem('rw_user')||'{}');
 if (!token) window.location.href='index.html';
 
-document.getElementById('redeem-code').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+// ── Generate random 5-digit code ──────────────────────────────────
+let currentCode = '';
+function genCode() {
+  currentCode = Math.floor(10000 + Math.random() * 90000).toString();
+  document.getElementById('preview-code').textContent = currentCode;
+}
+genCode(); // generate on load
 
+// ── Balance ───────────────────────────────────────────────────────
 async function loadBal(){
   try{
     const r=await fetch(API+'/wallet/balance',{headers:{'Authorization':'Bearer '+token}});
@@ -178,6 +207,7 @@ async function loadBal(){
 }
 loadBal();
 
+// ── Tabs ──────────────────────────────────────────────────────────
 function switchTab(tab){
   document.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
@@ -195,17 +225,23 @@ function calcCost(){
 
 function showMsg(id,t,type){const m=document.getElementById(id);m.textContent=t;m.className='msg '+type;}
 
-// REDEEM
+// ── Redeem ────────────────────────────────────────────────────────
 async function redeem(){
   const code=document.getElementById('redeem-code').value.trim();
-  if(!code)return showMsg('msg-redeem','Gift code enter karo!','error');
+  if(!code||code.length!==5)return showMsg('msg-redeem','5-digit code enter karo!','error');
   const btn=document.getElementById('redeem-btn');
   btn.classList.add('loading');btn.disabled=true;
   try{
-    const r=await fetch(API+'/gift/redeem',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({code})});
+    const r=await fetch(API+'/gift/redeem',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({code})
+    });
     const d=await r.json();
     if(d.status==='success'){
-      showMsg('msg-redeem',`🎉 ₹${d.amount} balance add ho gaya! 👑`,'success');
+      let successMsg = `🎉 ₹${d.amount} balance add ho gaya! 👑`;
+      if(d.remark) successMsg += `\n📝 ${d.remark}`;
+      showMsg('msg-redeem', successMsg, 'success');
       document.getElementById('redeem-code').value='';
       loadBal();
     }else showMsg('msg-redeem',d.message||'Invalid code','error');
@@ -213,32 +249,37 @@ async function redeem(){
   btn.classList.remove('loading');btn.disabled=false;
 }
 
-// CREATE
+// ── Create ────────────────────────────────────────────────────────
 async function createCode(){
-  const code  = document.getElementById('gc-code').value.trim();
   const amount= document.getElementById('gc-amt').value.trim();
   const uses  = document.getElementById('gc-uses').value.trim()||'1';
   const exp   = document.getElementById('gc-exp').value.trim();
-  if(!code||!amount)return showMsg('msg-create','Code aur amount required!','error');
+  const remark= document.getElementById('gc-remark').value.trim();
+  if(!amount)return showMsg('msg-create','Amount required!','error');
   if(parseFloat(amount)<1)return showMsg('msg-create','Minimum ₹1!','error');
   const totalCost=(parseFloat(amount)*parseInt(uses)).toFixed(2);
   if(!confirm(`₹${totalCost} balance se cut hoga. Proceed?`))return;
   const btn=document.getElementById('create-btn');
   btn.classList.add('loading');btn.disabled=true;
   try{
+    const body = { amount, max_uses:uses };
+    if(exp) body.expires_hours = exp;
+    if(remark) body.remark = remark;
+
     const r=await fetch(API+'/gift/create',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({code,amount,max_uses:uses,expires_hours:exp||undefined})
+      body:JSON.stringify(body)
     });
     const d=await r.json();
     if(d.status==='success'){
       showMsg('msg-create',`✅ Code "${d.code}" created! ₹${d.total_cost} deducted.`,'success');
-      document.getElementById('gc-code').value='';
       document.getElementById('gc-amt').value='';
       document.getElementById('gc-uses').value='';
       document.getElementById('gc-exp').value='';
+      document.getElementById('gc-remark').value='';
       document.getElementById('total-cost').textContent='0.00';
+      genCode(); // generate new preview code for next time
       loadBal();
       loadMyCodes();
     }else showMsg('msg-create',d.message||'Error','error');
@@ -246,7 +287,7 @@ async function createCode(){
   btn.classList.remove('loading');btn.disabled=false;
 }
 
-// MY CODES
+// ── My Codes ──────────────────────────────────────────────────────
 async function loadMyCodes(){
   try{
     const r=await fetch(API+'/gift/my-codes',{headers:{'Authorization':'Bearer '+token}});
@@ -264,6 +305,7 @@ async function loadMyCodes(){
           <div class="mc-code">${c.code}</div>
           <span class="mc-status ${isActive?'active':'expired'}">${isActive?'Active':'Expired/Used'}</span>
         </div>
+        ${c.remark?`<div class="mc-remark"><i class="fa-regular fa-note-sticky" style="color:var(--gold);opacity:0.6"></i> ${c.remark}</div>`:''}
         <div class="mc-info">
           <span><i class="fa-solid fa-indian-rupee-sign"></i> ₹${c.amount}/use</span>
           <span><i class="fa-solid fa-users"></i> ${c.used_count}/${c.max_uses} used</span>
@@ -276,4 +318,5 @@ async function loadMyCodes(){
 }
 </script>
 </body>
-</html>
+  </html>
+  
