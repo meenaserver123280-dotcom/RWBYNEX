@@ -132,9 +132,9 @@ document.getElementById('api-key').textContent=user.api_key||'—';
 
 // Build URLs with real api key
 const k = user.api_key || 'YOUR_API_KEY';
-document.getElementById('ep-pay').textContent = `${BASE}/api/pay?key=${k}&to={mobile}&amt={amount}&remark=royalwallet`;
-document.getElementById('ep-bal').textContent = `${BASE}/api/pay/balance?key=${k}`;
-document.getElementById('ep-ver').textContent = `${BASE}/api/pay/verify?key=${k}&mobile={mobile}`;
+document.getElementById('ep-pay').textContent = `${BASE}/payment?key=${k}&to={mobile}&amt={amount}&remark=royalwallet`;
+document.getElementById('ep-bal').textContent = `${BASE}/payment/balance?key=${k}`;
+document.getElementById('ep-ver').textContent = `${BASE}/payment/verify?key=${k}&mobile={mobile}`;
 
 function showMsg(t,type){const m=document.getElementById('msg');m.textContent=t;m.className='msg '+type;}
 function copyKey(){navigator.clipboard.writeText(user.api_key||'').then(()=>showMsg('API Key copied!','success'));}
@@ -153,9 +153,9 @@ async function regenKey(){
       localStorage.setItem('rw_user',JSON.stringify(user));
       document.getElementById('api-key').textContent=d.api_key;
       // Update URLs with new key
-      document.getElementById('ep-pay').textContent=`${BASE}/api/pay?key=${d.api_key}&to={mobile}&amt={amount}&remark=royalwallet`;
-      document.getElementById('ep-bal').textContent=`${BASE}/api/pay/balance?key=${d.api_key}`;
-      document.getElementById('ep-ver').textContent=`${BASE}/api/pay/verify?key=${d.api_key}&mobile={mobile}`;
+      document.getElementById('ep-pay').textContent=`${BASE}/payment?key=${d.api_key}&to={mobile}&amt={amount}&remark=royalwallet`;
+      document.getElementById('ep-bal').textContent=`${BASE}/payment/balance?key=${d.api_key}`;
+      document.getElementById('ep-ver').textContent=`${BASE}/payment/verify?key=${d.api_key}&mobile={mobile}`;
       showMsg('✅ New API key generated!','success');
     }else showMsg(d.message||'Error','error');
   }catch(e){showMsg('Network error','error');}
