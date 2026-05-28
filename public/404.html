@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 | Royal Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#c9a84c;--gold2:#e8c97a;--black:#080808;--black2:#111;--black3:#1a1a1a;--border:#2a2200;--text:#f5f0e0;--muted:#5a4a2a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative}
+
+/* Background grid */
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(201,168,76,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* Floating orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;animation:drift 8s ease-in-out infinite}
+.orb1{width:300px;height:300px;background:rgba(201,168,76,0.06);top:-100px;left:-100px;animation-delay:0s}
+.orb2{width:200px;height:200px;background:rgba(201,168,76,0.04);bottom:-50px;right:-50px;animation-delay:-4s}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,20px)}}
+
+.wrap{text-align:center;padding:2rem;position:relative;z-index:10;animation:fadeUp 0.6s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* Crown icon */
+.crown-wrap{width:90px;height:90px;background:linear-gradient(145deg,#1a1500,#0d0d00);border:1px solid var(--border);border-radius:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;position:relative;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.crown-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);border-radius:28px 28px 0 0}
+.crown-emoji{font-size:2.5rem}
+
+/* Glitch 404 */
+.error-num{font-size:clamp(5rem,20vw,8rem);font-weight:800;line-height:1;letter-spacing:-0.04em;color:transparent;-webkit-text-stroke:2px var(--gold);position:relative;margin-bottom:0.25rem;animation:glitch 4s ease-in-out infinite}
+.error-num::before,.error-num::after{content:'404';position:absolute;inset:0;color:transparent;-webkit-text-stroke:2px var(--gold)}
+.error-num::before{animation:glitch-top 4s ease-in-out infinite;clip-path:polygon(0 0,100% 0,100% 40%,0 40%);-webkit-text-stroke:2px rgba(201,168,76,0.4);transform:translate(-3px,0)}
+.error-num::after{animation:glitch-bot 4s ease-in-out infinite;clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%);-webkit-text-stroke:2px rgba(201,168,76,0.3);transform:translate(3px,0)}
+@keyframes glitch{0%,90%,100%{-webkit-text-stroke:2px var(--gold)}92%{-webkit-text-stroke:2px rgba(239,68,68,0.6)}94%{-webkit-text-stroke:2px var(--gold)}96%{-webkit-text-stroke:2px rgba(239,68,68,0.4)}}
+@keyframes glitch-top{0%,90%,100%{transform:translate(-3px,0);opacity:0.4}92%{transform:translate(4px,-2px);opacity:0.8}94%{transform:translate(-3px,0);opacity:0.4}}
+@keyframes glitch-bot{0%,90%,100%{transform:translate(3px,0);opacity:0.3}92%{transform:translate(-4px,2px);opacity:0.7}94%{transform:translate(3px,0);opacity:0.3}}
+
+.oops{font-size:0.6rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.25em;margin-bottom:0.75rem;animation:fadeUp 0.6s 0.1s ease both;opacity:0}
+
+.title{font-size:1.3rem;font-weight:800;margin-bottom:0.5rem;animation:fadeUp 0.6s 0.2s ease both;opacity:0}
+
+.subtitle{font-size:0.78rem;color:var(--muted);font-weight:500;max-width:260px;margin:0 auto 2rem;line-height:1.6;animation:fadeUp 0.6s 0.3s ease both;opacity:0}
+
+/* Divider */
+.divider{width:40px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 2rem;animation:fadeUp 0.6s 0.35s ease both;opacity:0}
+
+.btn-home{display:inline-flex;align-items:center;gap:0.6rem;padding:0.9rem 2rem;background:linear-gradient(135deg,var(--gold),#a07830,var(--gold));color:#000;border:none;border-radius:14px;font-size:0.82rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(201,168,76,0.25);transition:all 0.2s;animation:fadeUp 0.6s 0.4s ease both;opacity:0;background-size:200% auto}
+.btn-home:hover{background-position:right center;box-shadow:0 12px 32px rgba(201,168,76,0.35);transform:translateY(-2px)}
+.btn-home:active{transform:scale(0.97)}
+
+/* Counter */
+.redirect-txt{font-size:0.6rem;color:var(--muted);margin-top:1.2rem;animation:fadeUp 0.6s 0.5s ease both;opacity:0}
+.redirect-txt span{color:var(--gold);font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="wrap">
+  <div class="crown-wrap"><div class="crown-emoji">👑</div></div>
+
+  <div class="oops">Oops!</div>
+  <div class="error-num">404</div>
+
+  <div class="title">Page Not Found</div>
+  <div class="subtitle">Yeh page toh exist hi nahi karta bhai. Shayad galat jagah aa gaye.</div>
+
+  <div class="divider"></div>
+
+  <a href="/dashboard" class="btn-home">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    dashboard pe Wapas Jao
+  </a>
+
+  <div class="redirect-txt">Auto redirect in <span id="cnt">5</span>s...</div>
+</div>
+
+<script>
+let n = 5;
+const el = document.getElementById('cnt');
+const t = setInterval(() => {
+  n--;
+  el.textContent = n;
+  if (n <= 0) { clearInterval(t); window.location.href = '/dashboard'; }
+}, 1000);
+</script>
+</body>
+</html>
