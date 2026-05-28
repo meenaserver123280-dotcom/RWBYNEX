@@ -6,7 +6,11 @@ const path     = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// .html extension optional — /dashboard = /dashboard.html
+app.use(express.static(path.join(__dirname, 'public'), {
+  extensions: ['html']
+}));
 
 // ── MongoDB connection with caching for Vercel serverless ──
 let isConnected = false;
