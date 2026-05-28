@@ -51,4 +51,9 @@ app.use('/admin',    require('./routes/admin'));
 
 app.get('/health', (req, res) => res.json({ status:'ok', time:new Date().toISOString() }));
 
+// 404 — koi page nahi mila
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
+
 module.exports = app;
