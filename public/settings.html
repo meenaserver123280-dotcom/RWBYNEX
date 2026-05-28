@@ -25,7 +25,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
 .c-title{font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:1rem}
 .api-box{background:var(--black3);border:1px solid var(--border);border-radius:13px;padding:0.9rem 1rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.75rem}
 .api-key-text{flex:1;font-family:monospace;font-size:0.72rem;color:var(--gold);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.api-copy{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.35rem 0.75rem;color:var(--gold);font-size:0.62rem;font-weight:700;cursor:pointer}
+.api-copy{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.35rem 0.75rem;color:var(--gold);font-size:0.62rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .btn-sm{padding:0.7rem 1rem;background:rgba(201,168,76,0.1);border:1.5px solid rgba(201,168,76,0.25);border-radius:13px;color:var(--gold);font-size:0.72rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;width:100%;display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:0.6rem}
 .btn-sm:active{background:rgba(201,168,76,0.2)}
 .btn-red{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:var(--red)}
@@ -36,8 +36,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
 .api-endpoint{background:var(--black3);border:1px solid var(--border);border-radius:13px;padding:0.85rem 1rem;margin-bottom:0.6rem}
 .ep-method{display:inline-block;font-size:0.5rem;font-weight:800;padding:2px 7px;border-radius:4px;margin-bottom:0.35rem}
 .ep-method.get{background:rgba(16,185,129,0.15);color:var(--green)}
-.ep-url{font-family:monospace;font-size:0.68rem;color:var(--gold);word-break:break-all}
-.ep-desc{font-size:0.62rem;color:var(--muted);margin-top:0.3rem}
+.ep-url{font-family:monospace;font-size:0.62rem;color:var(--gold);word-break:break-all;line-height:1.5}
+.ep-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:0.4rem}
+.ep-desc{font-size:0.62rem;color:var(--muted)}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,0.97);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));z-index:50}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:0.48rem;font-weight:800;text-transform:uppercase;cursor:pointer;text-decoration:none;flex:1;transition:color 0.18s;padding-top:4px;position:relative}
 .nav-item.active{color:var(--gold)}
@@ -74,20 +75,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
 
   <div class="card">
     <div class="c-title">API Endpoints</div>
+
     <div class="api-endpoint">
       <div class="ep-method get">GET</div>
-      <div class="ep-url">/payment?key={api_key}&to={mobile}&amt={amount}</div>
-      <div class="ep-desc">Send payment to any user</div>
+      <div class="ep-url" id="ep-pay">—</div>
+      <div class="ep-bottom">
+        <div class="ep-desc">Send payment to any user</div>
+        <div class="api-copy" onclick="copyEp('ep-pay')"><i class="fa-regular fa-copy"></i> Copy</div>
+      </div>
     </div>
+
     <div class="api-endpoint">
       <div class="ep-method get">GET</div>
-      <div class="ep-url">/payment/balance?key={api_key}</div>
-      <div class="ep-desc">Check your balance</div>
+      <div class="ep-url" id="ep-bal">—</div>
+      <div class="ep-bottom">
+        <div class="ep-desc">Check your balance</div>
+        <div class="api-copy" onclick="copyEp('ep-bal')"><i class="fa-regular fa-copy"></i> Copy</div>
+      </div>
     </div>
+
     <div class="api-endpoint">
       <div class="ep-method get">GET</div>
-      <div class="ep-url">/payment/verify?key={api_key}&mobile={mobile}</div>
-      <div class="ep-desc">Verify if user exists</div>
+      <div class="ep-url" id="ep-ver">—</div>
+      <div class="ep-bottom">
+        <div class="ep-desc">Verify if user exists</div>
+        <div class="api-copy" onclick="copyEp('ep-ver')"><i class="fa-regular fa-copy"></i> Copy</div>
+      </div>
     </div>
   </div>
 
@@ -106,16 +119,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text);
 </div>
 <script>
 const API='';
+const BASE='https://royal-wallet.vercel.app';
 const token=localStorage.getItem('rw_token');
 const user=JSON.parse(localStorage.getItem('rw_user')||'{}');
 if(!token)window.location.href='index.html';
+
 document.getElementById('p-av').textContent=(user.name||'R')[0].toUpperCase();
 document.getElementById('p-name').textContent=user.name||'—';
 document.getElementById('p-mobile').textContent=user.mobile||'—';
 document.getElementById('p-wid').textContent=user.wallet_id||'—';
 document.getElementById('api-key').textContent=user.api_key||'—';
+
+// Build URLs with real api key
+const k = user.api_key || 'YOUR_API_KEY';
+document.getElementById('ep-pay').textContent = `${BASE}/api/pay?key=${k}&to={mobile}&amt={amount}&remark=royalwallet`;
+document.getElementById('ep-bal').textContent = `${BASE}/api/pay/balance?key=${k}`;
+document.getElementById('ep-ver').textContent = `${BASE}/api/pay/verify?key=${k}&mobile={mobile}`;
+
 function showMsg(t,type){const m=document.getElementById('msg');m.textContent=t;m.className='msg '+type;}
 function copyKey(){navigator.clipboard.writeText(user.api_key||'').then(()=>showMsg('API Key copied!','success'));}
+function copyEp(id){
+  const txt=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(txt).then(()=>showMsg('URL copied!','success'));
+}
+
 async function regenKey(){
   if(!confirm('API key regenerate karna chahte ho? Old key kaam nahi karega.'))return;
   try{
@@ -125,6 +152,10 @@ async function regenKey(){
       user.api_key=d.api_key;
       localStorage.setItem('rw_user',JSON.stringify(user));
       document.getElementById('api-key').textContent=d.api_key;
+      // Update URLs with new key
+      document.getElementById('ep-pay').textContent=`${BASE}/api/pay?key=${d.api_key}&to={mobile}&amt={amount}&remark=royalwallet`;
+      document.getElementById('ep-bal').textContent=`${BASE}/api/pay/balance?key=${d.api_key}`;
+      document.getElementById('ep-ver').textContent=`${BASE}/api/pay/verify?key=${d.api_key}&mobile={mobile}`;
       showMsg('✅ New API key generated!','success');
     }else showMsg(d.message||'Error','error');
   }catch(e){showMsg('Network error','error');}
