@@ -7,7 +7,9 @@ const giftCodeSchema = new mongoose.Schema({
   used_count: { type: Number, default: 0 },
   used_by:    [{ type: String }],
   expires_at: { type: Date },
-  active:     { type: Boolean, default: true }
+  active:     { type: Boolean, default: true },
+  remark:     { type: String, default: '' },
+  created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
 }, { timestamps: true });
 
 module.exports = mongoose.model('GiftCode', giftCodeSchema);
