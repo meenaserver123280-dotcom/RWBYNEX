@@ -177,14 +177,12 @@ const API='';
 const token=localStorage.getItem('rw_token');
 if(!token)window.location.href='index.html';
 let selAmt=0;
-let upiId='royalwallet@upi';
+let upiId='legend-bots-ali@fam';
 
-async function loadUPI(){
-  try{
-    const r=await fetch(API+'/wallet/deposit-info',{headers:{'Authorization':'Bearer '+token}});
-    const d=await r.json();
-    if(d.status==='success'){upiId=d.upi_id;document.getElementById('upi-id-show').textContent=d.upi_id;}
-  }catch(e){}
+function loadUPI(){
+  // Hardcoded UPI ID
+  upiId='legend-bots-ali@fam';
+  document.getElementById('upi-id-show').textContent=upiId;
 }
 loadUPI();
 
