@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MRSILENT v2 Code Runner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #141418;
+    --surface2: #1a1a22;
+    --border: #2a2a35;
+    --accent: #ff4444;
+    --accent2: #ff7700;
+    --text: #e8e8f0;
+    --muted: #666680;
+    --success: #22c55e;
+    --error: #ef4444;
+    --warn: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 15px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .brand-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+
+  .top-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .btn {
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:hover { opacity: 0.85; }
+
+  .btn-run {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-clear {
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-sample {
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* Main layout */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Editor panel */
+  .editor-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+  }
+
+  .panel-header {
+    padding: 8px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  .editor-wrap {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .line-nums {
+    padding: 14px 0;
+    min-width: 44px;
+    text-align: right;
+    background: #0a0a0c;
+    border-right: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #3a3a50;
+    user-select: none;
+    overflow: hidden;
+  }
+
+  .line-num {
+    display: block;
+    padding: 0 10px;
+    height: 20.8px;
+  }
+
+  #editor {
+    flex: 1;
+    background: #0a0a0c;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border: none;
+    outline: none;
+    padding: 14px;
+    resize: none;
+    tab-size: 2;
+    spellcheck: false;
+  }
+
+  /* Output panel */
+  .output-panel {
+    width: 42%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #output {
+    flex: 1;
+    background: #08080a;
+    padding: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .out-line { display: flex; gap: 8px; margin-bottom: 2px; }
+  .out-prefix { color: var(--accent); opacity: 0.6; user-select: none; flex-shrink: 0; }
+  .out-text { color: #c8d3f5; }
+  .out-error { color: var(--error); }
+  .out-warn  { color: var(--warn); }
+  .out-info  { color: #61afef; }
+  .out-success { color: var(--success); }
+
+  .out-empty {
+    color: var(--muted);
+    font-style: italic;
+    opacity: 0.5;
+    margin-top: 6px;
+  }
+
+  /* Status bar */
+  .statusbar {
+    padding: 5px 14px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .status-ok   { color: var(--success); }
+  .status-err  { color: var(--error); }
+  .status-run  { color: var(--accent2); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Config bar */
+  .config-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .config-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+  }
+
+  .config-input {
+    background: #0a0a0c;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .config-input:focus { border-color: var(--accent); }
+  .config-input::placeholder { color: var(--muted); opacity: 0.5; }
+  #cfgToken { width: 220px; }
+  #cfgUid   { width: 130px; }
+
+  .cfg-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(255,68,68,0.1);
+    border: 1px solid rgba(255,68,68,0.2);
+    color: var(--accent);
+    margin-left: auto;
+  }
+
+  @media (max-width: 640px) {
+    .main { flex-direction: column; }
+    .editor-panel { border-right: none; border-bottom: 1px solid var(--border); height: 55%; }
+    .output-panel { width: 100%; height: 45%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;">
+    <span class="brand">🔥 MRSILENT</span>
+    <span class="brand-sub">v2.0 Runner</span>
+  </div>
+  <div class="top-actions">
+    <button class="btn btn-sample" onclick="loadSample()">📄 Sample</button>
+    <button class="btn btn-clear" onclick="clearAll()">🗑 Clear</button>
+    <button class="btn btn-run" onclick="runCode()">▶ RUN</button>
+  </div>
+</div>
+
+<!-- Config bar -->
+<div class="config-bar">
+  <span class="config-label">🤖 Token:</span>
+  <input class="config-input" id="cfgToken" type="password" placeholder="123456:ABCdef..." />
+  <span class="config-label">👤 User ID:</span>
+  <input class="config-input" id="cfgUid" type="text" placeholder="987654321" />
+  <span class="cfg-badge" id="cfgStatus">not configured</span>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Editor -->
+  <div class="editor-panel">
+    <div class="panel-header">
+      <span class="panel-dot" style="background:#ff4444"></span>
+      editor — main.mrs
+    </div>
+    <div class="editor-wrap">
+      <div class="line-nums" id="lineNums"><span class="line-num">1</span></div>
+      <textarea id="editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
+        placeholder="# MRSILENT code yahan likho...
+# Example:
+x = 10
+print(x)"
+        oninput="updateLines()"
+        onkeydown="handleTab(event)"
+      ></textarea>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="output-panel">
+    <div class="panel-header">
+      <span class="panel-dot" style="background:#22c55e"></span>
+      output
+    </div>
+    <div id="output"><span class="out-empty">// Output yahan aayega...</span></div>
+  </div>
+
+</div>
+
+<!-- Status bar -->
+<div class="statusbar">
+  <span id="statusLeft">Ready — Ctrl+Enter to run</span>
+  <span id="statusRight">MRSILENT v2.0 · @xenovoidx</span>
+</div>
+
+<script>
+// ─── Line numbers ───────────────────────────────────────────────
+function updateLines() {
+  const ed = document.getElementById('editor');
+  const ln = document.getElementById('lineNums');
+  const lines = ed.value.split('\n').length;
+  let html = '';
+  for (let i = 1; i <= lines; i++) html += `<span class="line-num">${i}</span>`;
+  ln.innerHTML = html;
+}
+
+function handleTab(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const ed = e.target;
+    const s = ed.selectionStart, en = ed.selectionEnd;
+    ed.value = ed.value.substring(0, s) + '  ' + ed.value.substring(en);
+    ed.selectionStart = ed.selectionEnd = s + 2;
+    updateLines();
+  }
+  if (e.ctrlKey && e.key === 'Enter') runCode();
+}
+
+// ─── MRSILENT → JS Transpiler ───────────────────────────────────
+function transpile(src) {
+  const lines = src.split('\n');
+  const output = [];
+
+  for (let raw of lines) {
+    let line = raw;
+
+    // Comments: # → //
+    if (line.trim().startsWith('#')) { output.push(''); continue; }
+
+    // import "module" as alias  → skip (simulate via stubs)
+    if (/^\s*import\s+"/.test(line)) { output.push(''); continue; }
+
+    // fn name(args) { → function name(args) {
+    line = line.replace(/\bfn\s+(\w+)\s*\(/, 'function $1(');
+
+    // Arrow functions: (a,b) => expr  (already valid JS)
+
+    // loop(i, start, end) { → for(let i=start;i<end;i++){
+    line = line.replace(/\bloop\s*\(\s*(\w+)\s*,\s*([^,]+),\s*([^)]+)\)\s*\{/, 
+      'for(let $1=$2;$1<$3;$1++){');
+
+    // Null coalescing: already valid JS (??)
+
+    // String interpolation: "Hello {name}" → `Hello ${name}`
+    if (line.includes('"')) {
+      line = line.replace(/"([^"]*)"/g, (m, inner) => {
+        if (inner.includes('{')) {
+          return '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`';
+        }
+        return m;
+      });
+    }
+
+    // Variable declarations (bare assignments) → let if not already declared
+    // Only top-level simple assignments
+    line = line.replace(/^(\s*)(\w+)\s*=\s*(?!>)/, (m, sp, name) => {
+      const keywords = ['function','if','else','for','while','return','let','const','var','true','false'];
+      if (keywords.includes(name)) return m;
+      return `${sp}let ${name} = `;
+    });
+
+    output.push(line);
+  }
+
+  return output.join('\n');
+}
+
+// ─── Simulate MRSILENT built-in modules ─────────────────────────
+function makeRuntime(log) {
+  const token  = document.getElementById('cfgToken').value.trim();
+  const defUid = document.getElementById('cfgUid').value.trim();
+
+  async function tgSend(chatId, text) {
+    if (!token) { log('⚠ Bot token nahi diya config mein!', 'warn'); return; }
+    if (!chatId || chatId === 'NO_UID') { log('⚠ User ID config mein daalo!', 'warn'); return; }
+    const cid = isNaN(chatId) ? chatId : Number(chatId);
+    log(`📤 Sending to ${cid}: "${text}"`, 'info');
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: cid, text })
+      });
+      const data = await res.json();
+      if (data.ok) log(`✅ Message bhej diya! (msg_id: ${data.result.message_id})`, 'success');
+      else          log(`✗ Telegram error: ${data.description}`, 'error');
+    } catch(e) {
+      log(`✗ Network error: ${e.message}`, 'error');
+    }
+  }
+
+  const bot = {
+    send:    (chatId, text) => tgSend(chatId, String(text)),
+    reply:   (text)         => tgSend(defUid || 'NO_UID', String(text)),
+    message: (text)         => tgSend(defUid || 'NO_UID', String(text)),
+    ban:     (uid)          => log(`[bot.ban] ${uid} (simulated)`, 'warn'),
+    mute:    (uid, s)       => log(`[bot.mute] ${uid} ${s}s (simulated)`, 'warn'),
+    kick:    (uid)          => log(`[bot.kick] ${uid} (simulated)`, 'warn'),
+    promote: (uid)          => log(`[bot.promote] ${uid} (simulated)`, 'warn'),
+    demote:  (uid)          => log(`[bot.demote] ${uid} (simulated)`, 'warn'),
+    typing:  ()             => log(`[bot.typing] (simulated)`, 'info'),
+    pin:     (id)           => log(`[bot.pin] ${id} (simulated)`, 'info'),
+    delete:  (id)           => log(`[bot.delete] ${id} (simulated)`, 'info'),
+    info:    ()             => ({ id: 0, username: 'mybot' }),
+  };
+
+  const userStore = {};
+  const user = {
+    save: (k, v) => { userStore[k] = v; log(`[user.save] "${k}" = ${JSON.stringify(v)}`, 'info'); },
+    get:  (k)    => { log(`[user.get] "${k}" → ${JSON.stringify(userStore[k])}`, 'info'); return userStore[k]; },
+    delete: (k)  => { delete userStore[k]; log(`[user.delete] "${k}"`, 'info'); },
+    exists: (k)  => k in userStore,
+    all:   ()    => userStore,
+  };
+
+  const dbStore = {};
+  const db = {
+    save: (k, v) => { dbStore[k] = v; log(`[db.save] "${k}" = ${JSON.stringify(v)}`, 'info'); },
+    get:  (k)    => { log(`[db.get] "${k}" → ${JSON.stringify(dbStore[k])}`, 'info'); return dbStore[k]; },
+    delete: (k)  => { delete dbStore[k]; },
+    exists: (k)  => k in dbStore,
+    count:  ()   => Object.keys(dbStore).length,
+  };
+
+  const util = {
+    random:    (a, b) => Math.floor(Math.random() * (b - a + 1)) + a,
+    randomStr: (n)    => Math.random().toString(36).slice(2, 2 + n),
+    now:       ()     => Date.now(),
+    uuid:      ()     => crypto.randomUUID(),
+  };
+
+  const ai = {
+    ask:  (p)    => { log(`[ai.ask] "${p}" → (simulated)`, 'warn'); return '(AI response simulated)'; },
+    chat: (p, h) => { log(`[ai.chat] "${p}" → (simulated)`, 'warn'); return '(AI response simulated)'; },
+  };
+
+  const http = {
+    get:    (u)    => { log(`[http.get] ${u}`, 'warn'); return { json: ()=>({}), text: ()=>'', status: ()=>200 }; },
+    post:   (u, d) => { log(`[http.post] ${u}`, 'warn'); return { json: ()=>({}), text: ()=>'', status: ()=>200 }; },
+    put:    (u, d) => { log(`[http.put] ${u}`, 'warn'); return { json: ()=>({}), text: ()=>'', status: ()=>200 }; },
+    delete: (u)    => { log(`[http.delete] ${u}`, 'warn'); return { json: ()=>({}), text: ()=>'', status: ()=>200 }; },
+  };
+
+  // Default globals
+  const globals = {
+    text: 'Hello World', user_id: 12345, chat_id: -100123456,
+    username: 'xenovoidx', first_name: 'MR.SILENT',
+    is_group: false, command_args: '',
+    bot, user, db, util, ai, http,
+    print: (...a) => log(a.map(x => typeof x === 'object' ? JSON.stringify(x, null, 2) : String(x)).join(' '), 'text'),
+  };
+
+  return globals;
+}
+
+// ─── Run ────────────────────────────────────────────────────────
+async function runCode() {
+  const src = document.getElementById('editor').value.trim();
+  const out = document.getElementById('output');
+  const statusL = document.getElementById('statusLeft');
+  const btn = document.querySelector('.btn-run');
+
+  if (!src) {
+    out.innerHTML = '<span class="out-empty">// Kuch likho pehle...</span>';
+    return;
+  }
+
+  out.innerHTML = '';
+  btn.disabled = true;
+  btn.textContent = '⏳ Running...';
+  const lines_logged = [];
+
+  function log(msg, type = 'text') {
+    lines_logged.push({ msg, type });
+    const div = document.createElement('div');
+    div.className = 'out-line';
+    div.innerHTML = `<span class="out-prefix">›</span><span class="out-${type}">${escHtml(String(msg))}</span>`;
+    out.appendChild(div);
+    out.scrollTop = out.scrollHeight;
+  }
+
+  try {
+    statusL.textContent = '⏳ Running...';
+    statusL.className = 'status-run';
+
+    const js = transpile(src);
+    const runtime = makeRuntime(log);
+
+    const keys = Object.keys(runtime);
+    const vals = Object.values(runtime);
+    const fn = new Function(...keys, `return (async()=>{ ${js} })()`);
+    await fn(...vals);
+
+    if (lines_logged.length === 0) {
+      out.innerHTML = '<span class="out-empty">// Koi output nahi aaya. print() use karo!</span>';
+    }
+
+    statusL.textContent = '✓ Successfully run';
+    statusL.className = 'status-ok';
+  } catch (e) {
+    const div = document.createElement('div');
+    div.className = 'out-line';
+    div.innerHTML = `<span class="out-prefix">✗</span><span class="out-error">Error: ${escHtml(e.message)}</span>`;
+    out.appendChild(div);
+    statusL.textContent = '✗ Runtime error';
+    statusL.className = 'status-err';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '▶ RUN';
+  }
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function clearAll() {
+  document.getElementById('editor').value = '';
+  document.getElementById('output').innerHTML = '<span class="out-empty">// Output yahan aayega...</span>';
+  document.getElementById('statusLeft').textContent = 'Ready — Ctrl+Enter to run';
+  document.getElementById('statusLeft').className = '';
+  updateLines();
+}
+
+function loadSample() {
+  document.getElementById('editor').value =
+`import "bot" as bot
+
+# Upar Config mein Token aur User ID daalo!
+
+name = "MR.SILENT"
+
+# Kisi specific user ko message bhejo
+bot.send(987654321, "Yeh ek test message hai 🔥")
+
+# Ya config wale user ko reply karo
+bot.reply("Hello {name}! MRSILENT Runner se message aya!")
+`;
+  updateLines();
+}
+
+// Config badge live update
+function updateCfgBadge() {
+  const t = document.getElementById('cfgToken').value.trim();
+  const u = document.getElementById('cfgUid').value.trim();
+  const badge = document.getElementById('cfgStatus');
+  if (t && u) {
+    badge.textContent = '✓ configured';
+    badge.style.background = 'rgba(34,197,94,0.1)';
+    badge.style.borderColor = 'rgba(34,197,94,0.3)';
+    badge.style.color = 'var(--success)';
+  } else {
+    badge.textContent = 'not configured';
+    badge.style.background = 'rgba(255,68,68,0.1)';
+    badge.style.borderColor = 'rgba(255,68,68,0.2)';
+    badge.style.color = 'var(--accent)';
+  }
+}
+document.getElementById('cfgToken').addEventListener('input', updateCfgBadge);
+document.getElementById('cfgUid').addEventListener('input', updateCfgBadge);
+
+// Init
+updateLines();
+document.getElementById('editor').addEventListener('scroll', function() {
+  document.getElementById('lineNums').scrollTop = this.scrollTop;
+});
+</script>
+</body>
+</html>
