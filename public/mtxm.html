@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRSILENT Live Runner</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f1f5f9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .logo-text { font-size: 15px; font-weight: 700; color: #0f172a; }
+    .logo-text span { color: #6366f1; }
+    .logo-sub { font-size: 10px; color: #94a3b8; margin-top: 1px; }
+
+    .header-btns { display: flex; gap: 8px; align-items: center; }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    #runBtn {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      padding: 7px 22px;
+      box-shadow: 0 2px 8px rgba(99,102,241,0.35);
+    }
+    #runBtn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+    #runBtn:disabled { background: #e2e8f0; color: #94a3b8; box-shadow: none; cursor: not-allowed; }
+
+    #clearBtn {
+      background: none;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      padding: 6px 14px;
+    }
+    #clearBtn:hover { background: #f8fafc; }
+
+    /* STATUS BAR */
+    #statusBar {
+      padding: 5px 20px;
+      font-size: 11px;
+      color: #64748b;
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #94a3b8;
+      display: inline-block;
+    }
+    .dot.green { background: #22c55e; }
+    .dot.yellow { background: #f59e0b; animation: pulse 1s infinite; }
+    .dot.red { background: #ef4444; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* MAIN LAYOUT */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1px;
+      background: #e2e8f0;
+      min-height: 0;
+    }
+
+    .panel {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .panel-header {
+      padding: 7px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      background: #fafafa;
+    }
+    .panel-label {
+      display: flex; align-items: center; gap: 7px;
+    }
+    .badge {
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .badge-mrs { background: #fef3c7; color: #d97706; }
+    .badge-py  { background: #eff6ff; color: #3b82f6; }
+    .badge-out { background: #f0fdf4; color: #16a34a; }
+    .badge-err { background: #fef2f2; color: #dc2626; }
+    .panel-title { font-size: 11px; color: #64748b; font-weight: 500; }
+
+    .copy-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      padding: 2px 10px;
+      font-size: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+    }
+    .copy-btn:hover { background: #f1f5f9; }
+    .copy-btn.copied { background: #f0fdf4; border-color: #86efac; color: #16a34a; }
+
+    textarea {
+      flex: 1;
+      border: none;
+      outline: none;
+      resize: none;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: #1e293b;
+      background: #fff;
+      caret-color: #6366f1;
+    }
+    textarea::placeholder { color: #cbd5e1; }
+
+    .code-out {
+      flex: 1;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      color: #1e293b;
+    }
+    .code-out.error { color: #dc2626; }
+    .code-out.placeholder { color: #cbd5e1; }
+
+    .panel-footer {
+      padding: 4px 14px;
+      border-top: 1px solid #f1f5f9;
+      font-size: 10px;
+      color: #94a3b8;
+      flex-shrink: 0;
+      background: #fafafa;
+    }
+
+    /* Pyodide loading overlay */
+    #loadingOverlay {
+      position: fixed; inset: 0;
+      background: rgba(248,250,252,0.95);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 14px; z-index: 100;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loadingOverlay p { font-size: 13px; color: #64748b; }
+  </style>
+</head>
+<body>
+
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <p>Loading Python runtime…</p>
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔥</div>
+    <div>
+      <div class="logo-text">MRSILENT <span>→</span> Live Runner</div>
+      <div class="logo-sub">Powered by Claude AI + Pyodide</div>
+    </div>
+  </div>
+  <div class="header-btns">
+    <button id="clearBtn" onclick="clearAll()">Clear</button>
+    <button id="runBtn" disabled onclick="runCode()">▶ Run</button>
+  </div>
+</header>
+
+<div id="statusBar">
+  <span class="dot" id="statusDot"></span>
+  <span id="statusText">Loading Python runtime…</span>
+</div>
+
+<main>
+  <!-- MRSILENT Input -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-label">
+        <span class="badge badge-mrs">.mrs</span>
+        <span class="panel-title">MRSILENT Source</span>
+      </div>
+      <button class="copy-btn" id="copyMrsBtn" onclick="copyPanel('mrs')">Copy</button>
+    </div>
+    <textarea id="mrsInput" placeholder="fn greet(name) {
+    return &quot;Hello {name}&quot;
+}
+
+x = 10
+y = 20
+result = x + y
+
+print(greet(&quot;World&quot;))
+print(result)"></textarea>
+    <div class="panel-footer">
+      <span id="mrsLines">0 lines</span> · Ctrl+Enter to run
+    </div>
+  </div>
+
+  <!-- Python Output -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-label">
+        <span class="badge badge-py" id="pyBadge">.py</span>
+        <span class="panel-title">Generated Python</span>
+      </div>
+      <button class="copy-btn" id="copyPyBtn" onclick="copyPanel('py')">Copy</button>
+    </div>
+    <div class="code-out placeholder" id="pyOutput"># Python code will appear here after conversion</div>
+    <div class="panel-footer" id="pyFooter"></div>
+  </div>
+
+  <!-- Console Output -->
+  <div class="panel" style="grid-column: 1 / -1;">
+    <div class="panel-header">
+      <div class="panel-label">
+        <span class="badge badge-out" id="outBadge">output</span>
+        <span class="panel-title">Console</span>
+      </div>
+      <button class="copy-btn" onclick="copyPanel('out')">Copy</button>
+    </div>
+    <div class="code-out" id="consoleOut" style="color:#94a3b8;"># Run your code to see output here</div>
+  </div>
+</main>
+
+<script>
+const SYSTEM_PROMPT = `Convert MRSILENT code to Python.
+
+Rules:
+- Return ONLY Python code.
+- No explanations.
+- No markdown.
+- No code blocks.
+- Do not generate runtime libraries.
+- Do not generate boilerplate templates.
+- Do not generate BotModule, UserModule, DBModule, HTTPModule.
+- Do not generate compiler code.
+- Only translate the user's source code.
+- Keep output minimal and clean.
+- If syntax is invalid, return:
+ERROR: Invalid MRSILENT syntax`;
+
+let pyodide = null;
+let generatedPython = "";
+
+// Line counter
+document.getElementById("mrsInput").addEventListener("input", function() {
+  const lines = this.value.split("\n").length;
+  document.getElementById("mrsLines").textContent = lines + " lines";
+});
+
+// Ctrl+Enter shortcut
+document.getElementById("mrsInput").addEventListener("keydown", function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") runCode();
+});
+
+function setStatus(state, text) {
+  const dot = document.getElementById("statusDot");
+  const txt = document.getElementById("statusText");
+  dot.className = "dot " + state;
+  txt.textContent = text;
+}
+
+// Load Pyodide
+(async () => {
+  try {
+    pyodide = await loadPyodide();
+    document.getElementById("loadingOverlay").style.display = "none";
+    document.getElementById("runBtn").disabled = false;
+    setStatus("green", "Python runtime ready · Claude AI connected");
+  } catch(e) {
+    document.getElementById("loadingOverlay").innerHTML = "<p style='color:#dc2626'>Failed to load Python runtime</p>";
+    setStatus("red", "Runtime failed to load");
+  }
+})();
+
+async function runCode() {
+  const src = document.getElementById("mrsInput").value.trim();
+  if (!src) return;
+
+  const btn = document.getElementById("runBtn");
+  btn.disabled = true;
+  btn.textContent = "Converting…";
+  setStatus("yellow", "Converting MRSILENT → Python via Claude…");
+
+  // Reset outputs
+  const pyOut = document.getElementById("pyOutput");
+  const consoleOut = document.getElementById("consoleOut");
+  pyOut.className = "code-out placeholder";
+  pyOut.textContent = "Converting…";
+  consoleOut.style.color = "#94a3b8";
+  consoleOut.textContent = "Waiting…";
+
+  try {
+    // Step 1: Convert via Claude API
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: "user", content: src }]
+      })
+    });
+    const data = await res.json();
+    const python = (data.content?.map(b => b.text || "").join("") || "ERROR: No response").trim();
+
+    if (python.startsWith("ERROR")) {
+      pyOut.className = "code-out error";
+      pyOut.textContent = python;
+      consoleOut.style.color = "#dc2626";
+      consoleOut.textContent = python;
+      setStatus("red", "Conversion failed — invalid MRSILENT syntax");
+      btn.disabled = false;
+      btn.textContent = "▶ Run";
+      return;
+    }
+
+    generatedPython = python;
+    pyOut.className = "code-out";
+    pyOut.textContent = python;
+    document.getElementById("pyFooter").textContent = python.split("\n").length + " lines generated";
+    document.getElementById("pyBadge").className = "badge badge-py";
+
+    // Step 2: Run via Pyodide
+    btn.textContent = "Running…";
+    setStatus("yellow", "Running Python code…");
+
+    let stdout = "";
+    let stderr = "";
+
+    pyodide.setStdout({ batched: (s) => { stdout += s + "\n"; } });
+    pyodide.setStderr({ batched: (s) => { stderr += s + "\n"; } });
+
+    try {
+      await pyodide.runPythonAsync(python);
+      consoleOut.style.color = "#1e293b";
+      consoleOut.textContent = stdout || "(no output)";
+      if (stderr) {
+        consoleOut.style.color = "#d97706";
+        consoleOut.textContent = stdout + (stdout ? "\n" : "") + "⚠ " + stderr.trim();
+      }
+      setStatus("green", "Done · Python runtime ready");
+    } catch (runErr) {
+      consoleOut.style.color = "#dc2626";
+      consoleOut.textContent = "Runtime Error:\n" + runErr.message;
+      setStatus("red", "Runtime error");
+    }
+
+  } catch(e) {
+    pyOut.className = "code-out error";
+    pyOut.textContent = "ERROR: API request failed";
+    consoleOut.style.color = "#dc2626";
+    consoleOut.textContent = "ERROR: " + e.message;
+    setStatus("red", "API error");
+  }
+
+  btn.disabled = false;
+  btn.textContent = "▶ Run";
+}
+
+function clearAll() {
+  document.getElementById("mrsInput").value = "";
+  document.getElementById("pyOutput").className = "code-out placeholder";
+  document.getElementById("pyOutput").textContent = "# Python code will appear here after conversion";
+  document.getElementById("consoleOut").style.color = "#94a3b8";
+  document.getElementById("consoleOut").textContent = "# Run your code to see output here";
+  document.getElementById("mrsLines").textContent = "0 lines";
+  document.getElementById("pyFooter").textContent = "";
+  generatedPython = "";
+  setStatus("green", "Python runtime ready · Claude AI connected");
+}
+
+function copyPanel(panel) {
+  let text = "";
+  let btnId = "";
+  if (panel === "mrs") {
+    text = document.getElementById("mrsInput").value;
+    btnId = "copyMrsBtn";
+  } else if (panel === "py") {
+    text = document.getElementById("pyOutput").textContent;
+    btnId = "copyPyBtn";
+  } else {
+    text = document.getElementById("consoleOut").textContent;
+  }
+  if (!text) return;
+  navigator.clipboard.writeText(text);
+  if (btnId) {
+    const btn = document.getElementById(btnId);
+    btn.textContent = "✓ Copied";
+    btn.classList.add("copied");
+    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 2000);
+  }
+}
+</script>
+</body>
+      </html>
+      
