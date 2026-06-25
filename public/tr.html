@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OTP Test</title>
+</head>
+<body>
+
+<input type="email" id="email" placeholder="Enter Gmail">
+<button onclick="sendOTP()">Send OTP</button>
+
+<script>
+const GMAIL = "sharmasumit5141@gmail.com";
+const APP_PASSWORD = "nobq ajbq eevi irbh";
+
+function sendOTP() {
+    const email = document.getElementById("email").value;
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    alert("Generated OTP: " + otp);
+
+    // Backend/API call yahan hogi
+}
+</script>
+
+</body>
+</html>
