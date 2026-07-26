@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ravi Wallet — Shield Test</title>
+    
+    <!-- 🛡️ SHIELD ACTIVATE -->
+    <script src="https://code-shield-one.vercel.app/api/obfuscated"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .wallet-card {
+            max-width: 420px;
+            width: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .wallet-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .wallet-header h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #f5a623, #f5d623);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .wallet-header p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .shield-badge {
+            background: rgba(0,245,160,0.1);
+            border: 1px solid rgba(0,245,160,0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: inline-block;
+            font-size: 12px;
+            color: #00f5a0;
+            margin-bottom: 20px;
+        }
+        .balance-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .balance-box .label {
+            color: #888;
+            font-size: 13px;
+        }
+        .balance-box .amount {
+            font-size: 36px;
+            font-weight: 800;
+            color: #f5d623;
+            margin: 8px 0;
+        }
+        .balance-box .amount span {
+            font-size: 20px;
+            color: #888;
+        }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        .input-group label {
+            display: block;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .input-group input:focus {
+            border-color: #f5a623;
+            background: rgba(255,255,255,0.08);
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f5a623, #f5d623);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(245,166,35,0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #888;
+        }
+        .btn-outline:hover {
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: none;
+        }
+        .test-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .test-buttons button {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+            border-radius: 8px;
+            color: #888;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .test-buttons button:hover {
+            background: #2a2a2a;
+            color: #fff;
+        }
+        #log {
+            margin-top: 16px;
+            padding: 12px;
+            background: #0a0a0a;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #555;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        #log .good { color: #0f0; }
+        #log .bad { color: #f44; }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wallet-card">
+    
+    <div class="wallet-header">
+        <div class="shield-badge">🛡️ PROTECTED</div>
+        <h1>💰 Ravi Wallet</h1>
+        <p>Your secure digital wallet</p>
+    </div>
+
+    <div class="balance-box">
+        <div class="label">Total Balance</div>
+        <div class="amount">₹ 1,47,293 <span>.50</span></div>
+    </div>
+
+    <div class="input-group">
+        <label>Mobile Number</label>
+        <input type="text" placeholder="+91 98765 43210" value="+91 98765 43210">
+    </div>
+
+    <div class="input-group">
+        <label>Amount (₹)</label>
+        <input type="text" placeholder="Enter amount">
+    </div>
+
+    <button class="btn">📤 Send Money</button>
+    <button class="btn btn-outline">📥 Request Payment</button>
+
+    <!-- TEST SECTION -->
+    <div class="test-buttons">
+        <button onclick="alert('F12 dabake dekho! 😈')">🔓 Try F12</button>
+        <button onclick="alert('Right-click try karo! 😈')">🖱️ Try RC</button>
+        <button onclick="alert('Ctrl+Shift+I try karo! 😈')">⌨️ Try Inspect</button>
+        <button onclick="testShield()">🛡️ Test Shield</button>
+    </div>
+
+    <div id="log">
+        ⏳ Shield loading...
+    </div>
+
+    <div class="footer">
+        🛡️ Code Shield Active • Hacker ki maa chud gayi 💀
+    </div>
+</div>
+
+<script>
+function addLog(msg, type) {
+    var log = document.getElementById('log');
+    var div = document.createElement('div');
+    div.className = type || '';
+    div.textContent = '> ' + msg;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+}
+
+function testShield() {
+    var attr = document.documentElement.getAttribute('data-shield');
+    var session = document.documentElement.getAttribute('data-session');
+    
+    if (attr === 'active') {
+        addLog('✅ SHIELD ACTIVE! Session: ' + (session || 'N/A'), 'good');
+        addLog('🛡️ F12, RC, Inspect, View-Source sab BLOCK', 'good');
+        alert('✅ SHIELD ACTIVE!\n\nF12: Blocked\nRight-Click: Blocked\nCtrl+Shift+I: Blocked\nView Source: Blocked\nPrintScreen: Blocked\n\nHacker ki maa chud gayi! 💀');
+    } else {
+        addLog('❌ Shield not detected. data-shield="' + (attr || 'null') + '"', 'bad');
+        alert('❌ Shield inactive.\nScript load nahi hui? URL check karo.');
+    }
+}
+
+// Shield check
+setTimeout(function() {
+    var attr = document.documentElement.getAttribute('data-shield');
+    if (attr === 'active') {
+        addLog('✅ SHIELD ACTIVE — Fully Protected!', 'good');
+    } else {
+        addLog('❌ Shield NOT active. Retrying...', 'bad');
+        setTimeout(function() {
+            var attr2 = document.documentElement.getAttribute('data-shield');
+            if (attr2 === 'active') {
+                addLog('✅ Shield active (delayed)!', 'good');
+            } else {
+                addLog('❌ Shield failed to load. Check URL', 'bad');
+            }
+        }, 2000);
+    }
+}, 1000);
+
+// Keyboard logger
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F12' || e.key === 'f12' || e.keyCode === 123) {
+        addLog('⌨️ F12 pressed → ⛔ BLOCKED', 'good');
+    }
+    if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+        addLog('⌨️ Ctrl+Shift+I → ⛔ BLOCKED', 'good');
+    }
+}, true);
+
+document.addEventListener('contextmenu', function() {
+    addLog('🖱️ Right-click → ⛔ BLOCKED', 'good');
+}, true);
+</script>
+
+</body>
+          </html>
